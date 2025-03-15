@@ -18,6 +18,8 @@ import "./GeneralStyle.css";
 //Componentes SideBar
 import GeneralCardView from "../better/GeneralView";
 import InformesCardView from "../better/InformesView";
+import MasCardView from "../better/MasView";
+import IngresoGastoCardView from "../better/AddView";
 
 function HomeCard() {
   const [collapsed, setCollapsed] = useState(false);
@@ -67,8 +69,14 @@ function HomeCard() {
         flexDirection: "column" /* Organiza los elementos en columna */
     }}>
         <GeneralCardView />
-        <br /> <h1 className="text-center">Separador de Componente</h1>
+        <br /> <h1 className="text-center">Separador de Componentes</h1>
         <InformesCardView />
+        <br /> <h1 className="text-center">Separador de Componentes</h1>
+        <IngresoGastoCardView />
+        <br /> <h1 className="text-center">Separador de Componentes</h1>
+        <MasCardView />
+        <br /> <h1 className="text-center">Fin de Componentes</h1>
+
     </div>
 </ContentContainer>
     </div>
