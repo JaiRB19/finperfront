@@ -1,0 +1,50 @@
+/* Scrollbar NAV INICIO */
+.overflow-auto::-webkit-scrollbar {
+    width: 8px; /* Ancho de la barra */
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+    background: #D7D5D6; /* Color del scroll */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; /* Cambio de color al pasar el mouse */
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Color de fondo */
+    border-radius: 10px;
+}
+
+/* Scrollbar NAV INFORMES */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* Ancho de la barra */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #D7D5D6; /* Color del scroll */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; /* Cambio de color al pasar el mouse */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Color de fondo */
+    border-radius: 10px;
+}
+
+
+/* En tu archivo GeneralStyle.css */
+.btn-universal-color {
+    background-color: #D9632A;
+    color: #ffffff;
+  }
+  
+.btn-universal-color:hover {
+    background: #F78839;
+    color: #ffffff;
+    transition: all 0.3s ease;
+  }
