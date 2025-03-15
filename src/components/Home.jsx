@@ -4,6 +4,7 @@ import {
     Home, 
     CreditCard,
     Newspaper,
+    User,
     Menu, 
     Plus 
   } from "lucide-react";
@@ -21,6 +22,7 @@ function HomePage() {
     { icon: <Home />, label: "Home", href: "/home" },
     { icon: <CreditCard />, label: "Card", href: "/homecard" },
     { icon: <Newspaper />, label: "Novedades", href: "/home" },
+    { icon: <User />, label: "Perfil", href: "/home" },
   ];
 
   return (
