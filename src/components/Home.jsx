@@ -13,18 +13,35 @@ import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./GeneralStyle.css";
 
+//Componentes SideBar
 import CardsInter from "../better/CardInter";
+import NovedadesView from "../better/NovedadesView";
+import OpcionesHomeView from "../better/OpcionesHomeView";
+import TarjetaNuevaView from "../better/TarjetaNuevaView";
 
 function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
   const [cards, setCards] = useState([]);
+  const [selectedComponent, setSelectedComponent] = useState("home"); // Componente por defecto
 
   const menuItems = [
-    { icon: <Home />, label: "Home", href: "/home" },
+    { icon: <Home />, label: "Home", component: "home" },
     { icon: <CreditCard />, label: "Card", href: "/homecard" },
-    { icon: <NewspaperIcon />, label: "Novedades", href: "/home" },
-    { icon: <SettingsIcon />, label: "Configuración", href: "/home" },
+    { icon: <NewspaperIcon />, label: "Novedades", component: "novedades" },
+    { icon: <SettingsIcon />, label: "Configuración", component: "opciones" },
   ];
+
+  // Manejador para cambiar el contenido del container
+  const handleMenuClick = (component) => {
+    if (component) {
+      setSelectedComponent(component);
+    }
+  };
+
+  // Manejador para cambiar al componente de Añadir
+  const handleAddClick = () => {
+    setSelectedComponent("ingresoGasto");
+  };
 
   return (
     <div style={{ display: "flex" }}>
@@ -37,13 +54,13 @@ function HomePage() {
           </MenuButton>
         </SidebarHeader>
 
-        <CreateButton>
+        <CreateButton onClick={handleAddClick}>
           <Plus size={18} />
-          {!collapsed && "Crear"}
+          {!collapsed && "Añadir"}
         </CreateButton>
 
         {menuItems.map((item, index) => (
-          <NavLink key={index} to={item.href}>
+          <NavLink key={index} to={item.href} onClick={() => handleMenuClick(item.component)}>
             {item.icon}
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
@@ -59,7 +76,11 @@ function HomePage() {
         display: "flex",      /* Activa flexbox */
         flexDirection: "column" /* Organiza los elementos en columna */
     }}>
-        <CardsInter />
+          {/* Renderiza el componente según el estado seleccionado */}
+          {selectedComponent === "home" && <CardsInter />}
+          {selectedComponent === "novedades" && <NovedadesView />}
+          {selectedComponent === "opciones" && <OpcionesHomeView />}
+          {selectedComponent === "ingresoGasto" && <TarjetaNuevaView />}
     </div>
 </ContentContainer>
     </div>

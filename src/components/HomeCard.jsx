@@ -12,7 +12,7 @@ import {
     BookOpenText, 
     Menu, 
     Plus 
-  } from "lucide-react";
+} from "lucide-react";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./GeneralStyle.css";
@@ -27,17 +27,28 @@ import IngresoGastoCardView from "../better/AddView";
 
 function HomeCard() {
   const [collapsed, setCollapsed] = useState(false);
-  const [cards, setCards] = useState([]);
+  const [selectedComponent, setSelectedComponent] = useState("general"); // Componente por defecto
 
   const menuItems = [
-    { icon: <Home size={20} />, label: "Home", href: "/home" },
-    { icon: <Globe size={20} />, label: "General", href: "/home" },
-    { icon: <BarChart2 size={20} />, label: "Graficos", href: "/home" },
-    { icon: <ListIcon size={20} />, label: "Detalles", href: "/home" },
-    { icon: <PieChartIcon size={20} />, label: "Informes", href: "/home" },
-    { icon: <Settings size={20} />, label: "Opciones", href: "/home" },
-
+    { icon: <Home size={20} />, label: "Home", href: "/home", component: null }, // Home no cambia el contenido
+    { icon: <Globe size={20} />, label: "General", component: "general" },
+    { icon: <BarChart2 size={20} />, label: "Graficos", component: "graficos" },
+    { icon: <ListIcon size={20} />, label: "Detalles", component: "detalles" },
+    { icon: <PieChartIcon size={20} />, label: "Informes", component: "informes" },
+    { icon: <Settings size={20} />, label: "Opciones", component: "opciones" },
   ];
+
+  // Manejador para cambiar el contenido del container
+  const handleMenuClick = (component) => {
+    if (component) {
+      setSelectedComponent(component);
+    }
+  };
+
+  // Manejador para cambiar al componente de Añadir
+  const handleAddClick = () => {
+    setSelectedComponent("ingresoGasto");
+  };
 
   return (
     <div style={{ display: "flex" }}>
@@ -50,37 +61,43 @@ function HomeCard() {
           </MenuButton>
         </SidebarHeader>
 
-        <CreateButton>
+        <CreateButton onClick={handleAddClick}>
           <Plus size={18} />
           {!collapsed && "Añadir"}
         </CreateButton>
 
         {menuItems.map((item, index) => (
-          <NavLink key={index} to={item.href}>
+          <NavLink key={index} to={item.href} onClick={() => handleMenuClick(item.component)}>
             {item.icon}
             {!collapsed && <span>{item.label}</span>}
           </NavLink>
         ))}
       </SidebarContainer>
 
-{/* Main Content */}
-<ContentContainer collapsed={collapsed}>
-    <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>Tu card</h1>
-    <div className="mt-4 overflow-auto" style={{ 
-        flex: "1 1 auto",     /* Hace que ocupe todo el espacio disponible */
-        width: "100%",        /* Ocupa todo el ancho disponible */
-        display: "flex",      /* Activa flexbox */
-        flexDirection: "column" /* Organiza los elementos en columna */
-    }}>
-        <DetalleCardView />
-
-    </div>
-</ContentContainer>
+      {/* Main Content */}
+      <ContentContainer collapsed={collapsed}>
+        <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>Tu card</h1>
+        <div className="mt-4 overflow-auto" style={{ 
+            flex: "1 1 auto",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column"
+        }}>
+          {/* Renderiza el componente según el estado seleccionado */}
+          {selectedComponent === "general" && <GeneralCardView />}
+          {selectedComponent === "graficos" && <GraficosCardView />}
+          {selectedComponent === "detalles" && <DetalleCardView />}
+          {selectedComponent === "informes" && <InformesCardView />}
+          {selectedComponent === "opciones" && <OpcionesCardView />}
+          {selectedComponent === "ingresoGasto" && <IngresoGastoCardView />}
+        </div>
+      </ContentContainer>
     </div>
   );
 }
 
 export default HomeCard;
+
 
 //DISEÑO
 
