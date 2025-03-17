@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { 
     Home, 
     CreditCard,
-    Newspaper,
+    NewspaperIcon,
     User,
+    SettingsIcon,
     Menu, 
     Plus 
   } from "lucide-react";
@@ -21,8 +22,8 @@ function HomePage() {
   const menuItems = [
     { icon: <Home />, label: "Home", href: "/home" },
     { icon: <CreditCard />, label: "Card", href: "/homecard" },
-    { icon: <Newspaper />, label: "Novedades", href: "/home" },
-    { icon: <User />, label: "Perfil", href: "/home" },
+    { icon: <NewspaperIcon />, label: "Novedades", href: "/home" },
+    { icon: <SettingsIcon />, label: "Configuración", href: "/home" },
   ];
 
   return (

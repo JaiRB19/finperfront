@@ -5,7 +5,9 @@ import {
     Globe, 
     BarChart2, 
     Bell, 
-    Settings, 
+    Settings,
+    ListIcon,
+    PieChartIcon, 
     MoreHorizontal,
     BookOpenText, 
     Menu, 
@@ -17,8 +19,10 @@ import "./GeneralStyle.css";
 
 //Componentes SideBar
 import GeneralCardView from "../better/GeneralView";
+import GraficosCardView from "../better/GraficosView";
+import DetalleCardView from "../better/DetallesView";
 import InformesCardView from "../better/InformesView";
-import MasCardView from "../better/MasView";
+import OpcionesCardView from "../better/OpcionesView";
 import IngresoGastoCardView from "../better/AddView";
 
 function HomeCard() {
@@ -29,10 +33,10 @@ function HomeCard() {
     { icon: <Home size={20} />, label: "Home", href: "/home" },
     { icon: <Globe size={20} />, label: "General", href: "/home" },
     { icon: <BarChart2 size={20} />, label: "Graficos", href: "/home" },
-    { icon: <BookOpenText size={20} />, label: "Informes", href: "/home" },
-    { icon: <Bell size={20} />, label: "Novedades", href: "/home" },
+    { icon: <ListIcon size={20} />, label: "Detalles", href: "/home" },
+    { icon: <PieChartIcon size={20} />, label: "Informes", href: "/home" },
     { icon: <Settings size={20} />, label: "Opciones", href: "/home" },
-    { icon: <MoreHorizontal size={20} />, label: "Más", href: "/home" },
+
   ];
 
   return (
@@ -68,14 +72,7 @@ function HomeCard() {
         display: "flex",      /* Activa flexbox */
         flexDirection: "column" /* Organiza los elementos en columna */
     }}>
-        <GeneralCardView />
-        <br /> <h1 className="text-center">Separador de Componentes</h1>
-        <InformesCardView />
-        <br /> <h1 className="text-center">Separador de Componentes</h1>
-        <IngresoGastoCardView />
-        <br /> <h1 className="text-center">Separador de Componentes</h1>
-        <MasCardView />
-        <br /> <h1 className="text-center">Fin de Componentes</h1>
+        <DetalleCardView />
 
     </div>
 </ContentContainer>

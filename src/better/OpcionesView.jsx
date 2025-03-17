@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const MasCardView = () => {
+const OpcionesCardView = () => {
   return (
     <div className="container-fluid">
       <div className="row g-4 justify-content-center">
@@ -136,4 +136,4 @@ const MasCardView = () => {
   );
 };
 
-export default MasCardView;
+export default OpcionesCardView;
