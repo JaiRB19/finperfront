@@ -303,7 +303,7 @@ const CardHeader = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-weight: 600;
+  font-weight: 300;
   color: #333;
 `;
 
@@ -382,7 +382,7 @@ const HighlightIconContainer = styled.div`
 `;
 
 const HighlightTitle = styled.h3`
-  font-weight: 600;
+  font-weight: 300;
   color: #333;
 `;
 

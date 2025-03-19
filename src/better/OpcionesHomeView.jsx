@@ -126,7 +126,7 @@ const CardHeader = styled.div`
   }
   h3 {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 400;
   }
   p {
     font-size: 16px;
@@ -138,8 +138,8 @@ const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 14px 20px;
-  background: #f1f1f1;
-  font-weight: bold;
+  background:rgba(247, 136, 57, 0.3);
+  font-weight: 400;
   font-size: 18px;
   .icon {
     margin-right: 10px;

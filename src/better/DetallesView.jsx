@@ -12,8 +12,8 @@ export default function DetalleCardView() {
   ];
 
   const summary = {
-    expenses: -7500,
-    income: 8000,
+    expenses: -0,
+    income: 0,
   };
 
   return (

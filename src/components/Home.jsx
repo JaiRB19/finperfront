@@ -6,6 +6,7 @@ import {
     NewspaperIcon,
     User,
     SettingsIcon,
+    UserRoundPen,
     Menu, 
     Plus 
   } from "lucide-react";
@@ -18,6 +19,7 @@ import CardsInter from "../better/CardInter";
 import NovedadesView from "../better/NovedadesView";
 import OpcionesHomeView from "../better/OpcionesHomeView";
 import TarjetaNuevaView from "../better/TarjetaNuevaView";
+import PerfilView from "../better/PerfilUsuarioView";
 
 function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -29,6 +31,7 @@ function HomePage() {
     { icon: <CreditCard />, label: "Card", href: "/homecard" },
     { icon: <NewspaperIcon />, label: "Novedades", component: "novedades" },
     { icon: <SettingsIcon />, label: "Configuración", component: "opciones" },
+    { icon: <UserRoundPen />, label: "quitar luego", component: "perfil" },
   ];
 
   // Manejador para cambiar el contenido del container
@@ -81,6 +84,7 @@ function HomePage() {
           {selectedComponent === "novedades" && <NovedadesView />}
           {selectedComponent === "opciones" && <OpcionesHomeView />}
           {selectedComponent === "ingresoGasto" && <TarjetaNuevaView />}
+          {selectedComponent === "perfil" && <PerfilView />}
     </div>
 </ContentContainer>
     </div>

@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import HomePage from './components/Home';
 import HomeCard from './components/HomeCard';
+import PerfilView from './better/PerfilUsuarioView';
 
 function App() {
   return (

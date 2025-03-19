@@ -8,10 +8,10 @@ function GraficosCardView() {
   const periods = ["Ago 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Mes pasado", "Este mes"];
 
   const chartData = [
-    { category: "Ropa", percentage:45, color: "#D9632A" },
-    { category: "Mascotas", percentage: 23, color: "#F78839" },
-    { category: "Comida", percentage: 18, color: "#FFA559" },
-    { category: "Transporte", percentage: 15, color: "#FFD6A5" }
+    { category: "Ropa", percentage: 46, color: "#3498db" }, // Azul
+    { category: "Mascotas", percentage: 23, color: "#2ecc71" }, // Verde
+    { category: "Comida", percentage: 18, color: "#f39c12" }, // Amarillo/Naranja
+    { category: "Transporte", percentage: 15, color: "#e74c3c" }  // Rojo
   ];
 
   // Calculate the donut chart segments
