@@ -20,6 +20,8 @@ import NovedadesView from "../better/NovedadesView";
 import OpcionesHomeView from "../better/OpcionesHomeView";
 import TarjetaNuevaView from "../better/TarjetaNuevaView";
 import PerfilView from "../better/PerfilUsuarioView";
+import LetterLogo from '../assets/LetterLogo.svg'; // Ajusta la ruta si es necesario
+
 
 function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
