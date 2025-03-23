@@ -6,7 +6,7 @@ import { CreditCard as CreditCardIcon, Wallet, DollarSign } from "lucide-react";
 const CardsCredit = ({
   disponible = "", limite = "",
   gasto1 = "", gasto2 = "", gasto3 = "",
-  fechaCorte = "", fechaPago = ""
+  fechaCorte = "", fechaPago = "", oculto 
 }) => {
   return (
     <Container>
@@ -23,23 +23,23 @@ const CardsCredit = ({
           <TransactionsSection>
             <SectionTitle>Límite de Crédito</SectionTitle>
             <ValuesRow>
-              <Value type="normal">${limite}</Value>
+              <Value type="normal">{oculto ? "****" : `$${limite}`}</Value>
             </ValuesRow>
             
             <Divider />
             
             <SectionTitle>Últimos Cargos</SectionTitle>
             <ValuesRow noMargin>
-              <Value type="expense">${gasto1}</Value>
-              <Value type="expense">${gasto2}</Value>
-              <Value type="expense">${gasto3}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto1}`}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto2}`}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto3}`}</Value>
             </ValuesRow>
           </TransactionsSection>
 
           {/* Sección de disponible y fechas */}
           <BalanceSection>
             <SectionTitle>Disponible</SectionTitle>
-            <BalanceValue>${disponible}</BalanceValue>
+            <BalanceValue>{oculto ? "****" : `$${disponible}`}</BalanceValue>
             <Divider />
             <SectionTitle>Fechas Importantes</SectionTitle>
             <DateInfo>
@@ -61,7 +61,7 @@ const CardsCredit = ({
 const CardsMonedero = ({
   saldo = "",
   ingreso1 = "", ingreso2 = "", ingreso3 = "",
-  gasto1 = "", gasto2 = "", gasto3 = ""
+  gasto1 = "", gasto2 = "", gasto3 = "", oculto
 }) => {
   return (
     <Container>
@@ -80,25 +80,25 @@ const CardsMonedero = ({
           <TransactionsSection>
             <SectionTitle>Últimos Ingresos</SectionTitle>
             <ValuesRow>
-              <Value type="income">${ingreso1}</Value>
-              <Value type="income">${ingreso2}</Value>
-              <Value type="income">${ingreso3}</Value>
+              <Value type="income">{oculto ? "****" : `$${ingreso1}`}</Value>
+              <Value type="income">{oculto ? "****" : `$${ingreso2}`}</Value>
+              <Value type="income">{oculto ? "****" : `$${ingreso3}`}</Value>
             </ValuesRow>
             
             <Divider />
             
             <SectionTitle>Últimos Gastos</SectionTitle>
             <ValuesRow noMargin>
-              <Value type="expense">${gasto1}</Value>
-              <Value type="expense">${gasto2}</Value>
-              <Value type="expense">${gasto3}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto1}`}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto2}`}</Value>
+              <Value type="expense">{oculto ? "****" : `$${gasto3}`}</Value>
             </ValuesRow>
           </TransactionsSection>
 
           {/* Sección de saldo */}
           <BalanceSection>
             <SectionTitle>Efectivo Total</SectionTitle>
-            <BalanceValue>${saldo}</BalanceValue>
+            <BalanceValue>{oculto ? "****" : `$${saldo}`}</BalanceValue>
           </BalanceSection>
         </Row>
       </CardMonedero>
@@ -112,7 +112,7 @@ const CardsDebit = ({
     saldo = "", 
     limite = "",
     gasto1 = "", gasto2 = "", gasto3 = "",
-    ingreso1 = "", ingreso2 = "", ingreso3 = ""
+    ingreso1 = "", ingreso2 = "", ingreso3 = "", oculto
   }) => {
     return (
       <Container>
@@ -129,25 +129,25 @@ const CardsDebit = ({
             <TransactionsSection>
               <SectionTitle>Últimos Ingresos</SectionTitle>
               <ValuesRow>
-                <Value type="income">${ingreso1}</Value>
-                <Value type="income">${ingreso2}</Value>
-                <Value type="income">${ingreso3}</Value>
+                <Value type="income">{oculto ? "****" : `$${ingreso1}`}</Value>
+                <Value type="income">{oculto ? "****" : `$${ingreso2}`}</Value>
+                <Value type="income">{oculto ? "****" : `$${ingreso3}`}</Value>
               </ValuesRow>
               
               <Divider />
               
               <SectionTitle>Últimos Gastos</SectionTitle>
               <ValuesRow noMargin>
-                <Value type="expense">${gasto1}</Value>
-                <Value type="expense">${gasto2}</Value>
-                <Value type="expense">${gasto3}</Value>
+                <Value type="expense">{oculto ? "****" : `$${gasto1}`}</Value>
+                <Value type="expense">{oculto ? "****" : `$${gasto2}`}</Value>
+                <Value type="expense">{oculto ? "****" : `$${gasto3}`}</Value>
               </ValuesRow>
             </TransactionsSection>
   
             {/* Sección de saldo y límite */}
             <BalanceSection>
               <SectionTitle>Saldo Disponible</SectionTitle>
-              <BalanceValue debit>${saldo}</BalanceValue>
+              <BalanceValue debit>{oculto ? "****" : `$${saldo}`}</BalanceValue>
               <Divider />
               <SectionTitle>Límite Diario</SectionTitle>
               <DateInfo>

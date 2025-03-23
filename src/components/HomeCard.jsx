@@ -182,7 +182,7 @@ const NavLink = styled(Link)`
 
 const ContentContainer = styled.div`
   position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
-  left: ${(props) => (props.collapsed ? "70px" : "250px")}; /* Se alinea con el borde del sidebar */
+  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
   top: 0;                /* Desde el borde superior */
   right: 0;              /* Hasta el borde derecho */
   bottom: 0;             /* Hasta el borde inferior */

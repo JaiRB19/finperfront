@@ -1,38 +1,37 @@
 import React, { useState } from "react";
+import { Eye, EyeClosed } from 'lucide-react';
 import styled from "styled-components";
-import { CardsCredit, CardsMonedero, CardsDebit } from "../better/Cardsprueba";
+import { CardsCredit, CardsMonedero, CardsDebit } from "./TarjetasComplementos";
 
 const CardsInter = () => {
-  const [filter, setFilter] = useState("all"); // "all", "debit", "credit", "monedero"
+  const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [oculto, setOculto] = useState(false);
 
-  // Datos de las tarjetas
+  const toggleOcultar = () => setOculto(!oculto);
+
   const cards = [
-    { type: "debit", component: CardsDebit, saldo: "2,500.00", limite: "8,000.00", ingreso1: "1,200.00", ingreso2: "800.00", ingreso3: "500.00", gasto1: "350.00", gasto2: "125.00", gasto3: "75.00" },
-    { type: "credit", component: CardsCredit, disponible: "25,000", limite: "50,000", gasto1: "2,500", gasto2: "1,800", gasto3: "3,200", fechaCorte: "20/04/2025", fechaPago: "05/05/2025" },
-    { type: "monedero", component: CardsMonedero, saldo: "5,650", ingreso1: "2,000", ingreso2: "1,500", ingreso3: "3,000", gasto1: "500", gasto2: "350", gasto3: "700" }
+    { type: "debit", component: CardsDebit, saldo: "2500.00", limite: "8000.00", ingreso1: "1200.00", ingreso2: "800.00", ingreso3: "500.00", gasto1: "350.00", gasto2: "125.00", gasto3: "75.00" },
+    { type: "credit", component: CardsCredit, disponible: "25000", limite: "50000", gasto1: "2500", gasto2: "1800", gasto3: "3200", fechaCorte: "20/04/2025", fechaPago: "05/05/2025" },
+    { type: "monedero", component: CardsMonedero, saldo: "5650", ingreso1: "2000", ingreso2: "1500", ingreso3: "3000", gasto1: "500", gasto2: "350", gasto3: "700" }
+    
   ];
 
-  // Filtrar tarjetas según el tipo y la búsqueda
-  const filteredCards = cards.filter(card => {
-    const matchesFilter = filter === "all" || card.type === filter;
-    const matchesSearch = Object.values(card).some(value => 
-      typeof value === "string" && value.includes(search)
-    );
-    return matchesFilter && matchesSearch;
-  });
+  const filteredCards = cards.filter(card =>
+    (filter === "all" || card.type === filter) &&
+    Object.values(card).some(value => typeof value === "string" && value.includes(search))
+  );
 
   return (
     <Container>
-      {/* Filtro */}
-      <FilterContainer>
-            <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>Todos</FilterButton>
-            <FilterButton active={filter === "debit"} onClick={() => setFilter("debit")}>Débito</FilterButton>
-            <FilterButton active={filter === "credit"} onClick={() => setFilter("credit")}>Crédito</FilterButton>
-            <FilterButton active={filter === "monedero"} onClick={() => setFilter("monedero")}>Monedero</FilterButton>
-      </FilterContainer>
       
-      {/* Barra de búsqueda */}
+      <FilterContainer>
+        <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>Todos</FilterButton>
+        <FilterButton active={filter === "debit"} onClick={() => setFilter("debit")}>Débito</FilterButton>
+        <FilterButton active={filter === "credit"} onClick={() => setFilter("credit")}>Crédito</FilterButton>
+        <FilterButton active={filter === "monedero"} onClick={() => setFilter("monedero")}>Monedero</FilterButton>
+      </FilterContainer>
+
       <SearchInput
         type="text"
         placeholder="Buscar..."
@@ -40,13 +39,21 @@ const CardsInter = () => {
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* Botón de añadir */}
-      <CreateButton>Añadir</CreateButton>
+      <ButtonRow>
+        <CreateButton>Añadir</CreateButton>
+        <EyeButton onClick={toggleOcultar}>
+          {oculto ? <EyeClosed size={24} /> : <Eye size={24} />}
+          <span>{oculto ? 'Mostrar' : 'Ocultar'}</span>
+        </EyeButton>
+      </ButtonRow>
 
-      {/* Renderizar tarjetas filtradas */}
+
+
+
       {filteredCards.map((card, index) => {
+        
         const CardComponent = card.component;
-        return <CardComponent key={index} {...card} />;
+        return <CardComponent key={index} {...card} oculto={oculto} />;
       })}
     </Container>
   );
@@ -67,16 +74,10 @@ const FilterContainer = styled.div`
   gap: 10px;
   margin-bottom: 15px;
   width: 100%;
-  /* Media query para pantallas más pequeñas (por ejemplo, móviles) */
-  @media (max-width: 768px) {
-    flex-direction: column; /* Cambia la dirección a columna */
-    gap: 5px; /* Reduce el espacio entre los elementos */
-  }
 
-  /* Media query para pantallas aún más pequeñas (por ejemplo, móviles pequeños) */
-  @media (max-width: 480px) {
-    flex-direction: column; /* Asegura que la dirección sea columna */
-    gap: 5px; /* Mantiene el espacio reducido */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 5px;
   }
 `;
 
@@ -105,6 +106,13 @@ const SearchInput = styled.input`
   margin-bottom: 15px;
 `;
 
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-start; /* Alinea los elementos al inicio */
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 15px;
+`;
 
 const CreateButton = styled.button`
   background: #D9632A;
@@ -115,12 +123,36 @@ const CreateButton = styled.button`
   border-radius: 15px;
   font-weight: 600;
   cursor: pointer;
-  margin: 15px auto;
+  transition: 0.3s;
+
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+
   &:hover {
     background: #F78839;
+  }
+`;
+
+const EyeButton = styled.button`
+  background: rgba(224, 217, 217, 0.8);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px 12px; /* Aumenta el padding para el texto */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  display: flex; /* Agrega flexbox para alinear icono y texto */
+  align-items: center; /* Alinea verticalmente */
+  gap: 8px; /* Espacio entre icono y texto */
+  transition: 0.3s;
+
+  &:hover {
+    background:rgb(233, 225, 220);
+  }
+
+  &:active {
+    background:rgb(230, 219, 212);
   }
 `;

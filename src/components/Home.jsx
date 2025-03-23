@@ -6,6 +6,7 @@ import {
     NewspaperIcon,
     User,
     SettingsIcon,
+    CalendarDays,
     UserRoundPen,
     Menu, 
     Plus 
@@ -21,6 +22,7 @@ import NovedadesView from "../better/NovedadesView";
 import OpcionesHomeView from "../better/OpcionesHomeView";
 import TarjetaNuevaView from "../better/TarjetaNuevaView";
 import PerfilView from "../better/PerfilUsuarioView";
+import CalendarioView from "../better/CalendarioView";
 import LetterLogo from '../assets/LetterLogo.svg'; // Ajusta la ruta si es necesario
 
 
@@ -35,6 +37,7 @@ function HomePage() {
     { icon: <NewspaperIcon />, label: "Novedades", component: "novedades" },
     { icon: <SettingsIcon />, label: "Configuración", component: "opciones" },
     { icon: <UserRoundPen />, label: "Perfil", component: "perfil" },
+    { icon: <CalendarDays />, label: "Calendario", component: "calendario" },
   ];
 
   // Manejador para cambiar el contenido del container
@@ -89,6 +92,7 @@ function HomePage() {
           {selectedComponent === "opciones" && <OpcionesHomeView />}
           {selectedComponent === "ingresoGasto" && <TarjetaNuevaView />}
           {selectedComponent === "perfil" && <PerfilView />}
+          {selectedComponent === "calendario" && <CalendarioView />}
     </div>
 </ContentContainer>
     </div>
@@ -177,7 +181,7 @@ const NavLink = styled(Link)`
 
 const ContentContainer = styled.div`
   position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
-  left: ${(props) => (props.collapsed ? "70px" : "250px")}; /* Se alinea con el borde del sidebar */
+  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
   top: 0;                /* Desde el borde superior */
   right: 0;              /* Hasta el borde derecho */
   bottom: 0;             /* Hasta el borde inferior */
