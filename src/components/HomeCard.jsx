@@ -9,7 +9,8 @@ import {
     ListIcon,
     PieChartIcon, 
     MoreHorizontal,
-    BookOpenText, 
+    BookOpenText,
+    ChartSpline, 
     Menu, 
     Plus 
 } from "lucide-react";
@@ -24,6 +25,7 @@ import DetalleCardView from "../better/DetallesView";
 import InformesCardView from "../better/InformesView";
 import OpcionesCardView from "../better/OpcionesView";
 import IngresoGastoCardView from "../better/AddView";
+import InversionesView from "../better/InversionesView";
 
 function HomeCard() {
   const [collapsed, setCollapsed] = useState(false);
@@ -35,6 +37,7 @@ function HomeCard() {
     { icon: <BarChart2 size={20} />, label: "Graficos", component: "graficos" },
     { icon: <ListIcon size={20} />, label: "Detalles", component: "detalles" },
     { icon: <PieChartIcon size={20} />, label: "Informes", component: "informes" },
+    { icon: <ChartSpline size={20} />, label: "Inversiones", component: "inversiones" },
     { icon: <Settings size={20} />, label: "Opciones", component: "opciones" },
   ];
 
@@ -90,6 +93,7 @@ function HomeCard() {
           {selectedComponent === "informes" && <InformesCardView />}
           {selectedComponent === "opciones" && <OpcionesCardView />}
           {selectedComponent === "ingresoGasto" && <IngresoGastoCardView />}
+          {selectedComponent === "inversiones" && <InversionesView />}
         </div>
       </ContentContainer>
     </div>
@@ -110,7 +114,7 @@ const SidebarContainer = styled.div`
   background: white;
   border-right: 1px solid #e0e0e0;
   transition: width 0.3s;
-  width: ${(props) => (props.collapsed ? "70px" : "250px")};
+  width: ${(props) => (props.collapsed ? "70px" : "200px")};
   display: flex;
   flex-direction: column;
   align-items: ${(props) => (props.collapsed ? "center" : "flex-start")};

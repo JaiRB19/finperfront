@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./GeneralStyle.css";
 
 //Componentes SideBar
+import DashboardView from "../better/DashboardView";
 import CardsInter from "../better/CardInter";
 import NovedadesView from "../better/NovedadesView";
 import OpcionesHomeView from "../better/OpcionesHomeView";
@@ -26,14 +27,14 @@ import LetterLogo from '../assets/LetterLogo.svg'; // Ajusta la ruta si es neces
 function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
   const [cards, setCards] = useState([]);
-  const [selectedComponent, setSelectedComponent] = useState("home"); // Componente por defecto
+  const [selectedComponent, setSelectedComponent] = useState("dashboard"); // Componente por defecto
 
   const menuItems = [
-    { icon: <Home />, label: "Home", component: "home" },
-    { icon: <CreditCard />, label: "Card", href: "/homecard" },
+    { icon: <Home />, label: "Home", component: "dashboard" },
+    { icon: <CreditCard />, label: "Card", component: "cards" },
     { icon: <NewspaperIcon />, label: "Novedades", component: "novedades" },
     { icon: <SettingsIcon />, label: "Configuración", component: "opciones" },
-    { icon: <UserRoundPen />, label: "quitar luego", component: "perfil" },
+    { icon: <UserRoundPen />, label: "Perfil", component: "perfil" },
   ];
 
   // Manejador para cambiar el contenido del container
@@ -82,7 +83,8 @@ function HomePage() {
         flexDirection: "column" /* Organiza los elementos en columna */
     }}>
           {/* Renderiza el componente según el estado seleccionado */}
-          {selectedComponent === "home" && <CardsInter />}
+          {selectedComponent === "dashboard" && <DashboardView />}
+          {selectedComponent === "cards" &&   <CardsInter/>}
           {selectedComponent === "novedades" && <NovedadesView />}
           {selectedComponent === "opciones" && <OpcionesHomeView />}
           {selectedComponent === "ingresoGasto" && <TarjetaNuevaView />}
@@ -106,12 +108,13 @@ const SidebarContainer = styled.div`
   background: white;
   border-right: 1px solid #e0e0e0;
   transition: width 0.3s;
-  width: ${(props) => (props.collapsed ? "70px" : "250px")};
+  width: ${(props) => (props.collapsed ? "70px" : "200px")};
   display: flex;
   flex-direction: column;
   align-items: ${(props) => (props.collapsed ? "center" : "flex-start")};
   z-index: 1000;          /* Asegura que esté por encima de otros elementos */
   overflow-y: auto;       /* Permite scroll si el contenido es más largo */
+
 `;
 
 const SidebarHeader = styled.div`
@@ -185,5 +188,5 @@ const ContentContainer = styled.div`
   flex-direction: column; /* Organiza los elementos en columna */
   justify-content: center; /* Centra verticalmente */
   align-items: center;     /* Centra horizontalmente */
-  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */
+  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */4
 `;
