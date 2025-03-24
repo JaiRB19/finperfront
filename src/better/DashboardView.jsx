@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { CalendarDays, CreditCard, Coins, LayoutGrid, List } from "lucide-react";
 import styled from 'styled-components';
 
-//Accesos Directos
+// Accesos Directos
 import Presupuesto from './PresupuestosComplement';
 import CalendarioView from './CalendarioView';
 import GraficaInversion from './GraficaInversion';
 
-
 function DashboardView() {
-  const [activeFilter, setActiveFilter] = useState("Mes"); // Estado para el filtro activo
-  const [isGridView, setIsGridView] = useState(true); // Estado para cambiar vista
+  const [activeFilter, setActiveFilter] = useState("Mes");
+  const [isGridView, setIsGridView] = useState(true);
 
   const fechaHoy = new Date();
   const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -20,8 +19,7 @@ function DashboardView() {
     <DashboardContainer>
       <HeaderSection>
         <TitleArea>
-          <Title>Tú Gestor de <span style={{ fontWeight: 'bold', color: '#ff9800' }}>FIN</span>anzas{' '}
-          <span style={{ fontWeight: 'bold', color: '#ff9800' }}>PER</span>sonales de confianza</Title>
+          <Title>Tú Gestor de <Highlight>FIN</Highlight>anzas <Highlight>PER</Highlight>sonales de confianza</Title>
           <Subtitle>Hoy es {fechaFormateada}</Subtitle>
         </TitleArea>
         <FilterArea>
@@ -48,32 +46,43 @@ function DashboardView() {
       <CardsContainer isGridView={isGridView}>
         <Card>
           <CardHeader>
-            <CardIcon><CalendarDays color="#e86833"/></CardIcon>
+            <CardIconContainer>
+              <CalendarDays size={20} color="#e86833"/>
+            </CardIconContainer>
             <CardTitle>CALENDARIO</CardTitle>
+            <CardActions>
+              <CardActionButton>Ver todo</CardActionButton>
+            </CardActions>
           </CardHeader>
           <CardBody className='custom-scrollbar'>
-            <p className='text-center'>solo es para ver si se acomodan</p>
-            <CalendarioView />
           </CardBody>
         </Card>
+        
         <Card>
           <CardHeader>
-            <CardIcon><CreditCard color="#e86833"/></CardIcon>
+            <CardIconContainer>
+              <CreditCard size={20} color="#e86833"/>
+            </CardIconContainer>
             <CardTitle>RECURRENTES</CardTitle>
+            <CardActions>
+              <CardActionButton>Ver todo</CardActionButton>
+            </CardActions>
           </CardHeader>
           <CardBody className='custom-scrollbar'>
-            <p className='text-center'>solo es para ver si se acomodan</p>
-            <Presupuesto />
           </CardBody>
         </Card>
+        
         <Card>
           <CardHeader>
-            <CardIcon><Coins color="#e86833"/></CardIcon>
+            <CardIconContainer>
+              <Coins size={20} color="#e86833"/>
+            </CardIconContainer>
             <CardTitle>DIVISAS</CardTitle>
+            <CardActions>
+              <CardActionButton>Ver todo</CardActionButton>
+            </CardActions>
           </CardHeader>
           <CardBody className='custom-scrollbar'>
-            <p className='text-center'>solo es para ver si se acomodan</p>
-            <GraficaInversion />
           </CardBody>
         </Card>
       </CardsContainer>
@@ -83,31 +92,28 @@ function DashboardView() {
 
 export default DashboardView;
 
-// Contenedor Principal
+// Estilos mejorados
 const DashboardContainer = styled.div`
-  height: 100%;          
+  height: 100%;
   padding: 24px;
+  background-color: #f8f9fa;
 `;
 
-// Header
+const Highlight = styled.span`
+  font-weight: bold;
+  color: #e86833;
+`;
+
 const HeaderSection = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 
-    /* Media query para pantallas más pequeñas (por ejemplo, móviles) */
   @media (max-width: 768px) {
-    flex-direction: column; /* Cambia la dirección a columna */
-    align-items: flex-start; /* Alinea los elementos a la izquierda */
-    gap: 10px; /* Agrega espacio entre los elementos */
-  }
-
-  /* Media query para pantallas aún más pequeñas (por ejemplo, móviles pequeños) */
-  @media (max-width: 480px) {
-    flex-direction: column; /* Asegura que la dirección sea columna */
-    align-items: flex-start; /* Asegura que la alineación sea a la izquierda */
-    gap: 10px; /* Mantiene el espacio entre los elementos */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
 `;
 
@@ -116,26 +122,30 @@ const TitleArea = styled.div``;
 const Title = styled.h1`
   font-size: 28px;
   font-weight: 600;
-  color: rgb(232, 105, 51);
+  color: #333;
   margin: 0;
 `;
 
 const Subtitle = styled.p`
   color: #6b7280;
-  margin: 0;
+  margin: 5px 0 0;
   font-size: 16px;
 `;
 
-// Área de Filtros
 const FilterArea = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
+
+  @media (max-width: 480px) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 `;
 
 const FilterTabs = styled.div`
   display: flex;
-  background-color: #F2F2F7; 
+  background-color: #f2f2f7;
   border-radius: 8px;
   overflow: hidden;
   padding: 2px;
@@ -144,7 +154,7 @@ const FilterTabs = styled.div`
 const FilterTab = styled.button`
   padding: 8px 16px;
   background: ${({ active }) => (active ? '#FFFFFF' : 'transparent')};
-  color: ${({ active }) => (active ? '#d9632a' : '#6b7280')};
+  color: ${({ active }) => (active ? '#e86833' : '#6b7280')};
   border: none;
   cursor: pointer;
   font-size: 14px;
@@ -155,10 +165,6 @@ const FilterTab = styled.button`
 
   &:hover {
     background-color: ${({ active }) => (active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)')};
-  }
-
-  &:active {
-    transform: scale(0.98);
   }
 `;
 
@@ -176,11 +182,11 @@ const UpdateButton = styled.button`
   transition: 0.3s;
 
   &:hover {
-    background-color: #ffe0b2;
+    background-color: #f0f0f0;
+    border-color: #d1d5db;
   }
 `;
 
-// Botón para cambiar la vista (cuadrícula/lista)
 const ViewToggle = styled.button`
   background: white;
   border: 1px solid #e5e7eb;
@@ -193,75 +199,119 @@ const ViewToggle = styled.button`
   transition: 0.3s;
 
   &:hover {
-    background-color: #ffe0b2;
+    background-color: #f0f0f0;
+    border-color: #d1d5db;
   }
 `;
 
-// Contenedor de las tarjetas con cambio de vista
 const CardsContainer = styled.div`
   display: ${({ isGridView }) => (isGridView ? 'grid' : 'flex')};
-  grid-template-columns: ${({ isGridView }) => (isGridView ? 'repeat(3, 1fr)' : 'none')};
+  grid-template-columns: ${({ isGridView }) => (isGridView ? 'repeat(auto-fit, minmax(380px, 1fr))' : 'none')};
   flex-direction: ${({ isGridView }) => (!isGridView ? 'column' : 'unset')};
-  gap: 20px;
+  gap: 24px;
 
-    /* Media query para pantallas más pequeñas (por ejemplo, tabletas) */
   @media (max-width: 1024px) {
-    grid-template-columns: ${({ isGridView }) => (isGridView ? 'repeat(2, 1fr)' : 'none')}; /* 2 columnas en cuadrícula */
+    grid-template-columns: ${({ isGridView }) => (isGridView ? 'repeat(auto-fit, minmax(300px, 1fr))' : 'none')};
   }
 
-  /* Media query para pantallas aún más pequeñas (por ejemplo, móviles) */
   @media (max-width: 768px) {
-    grid-template-columns: 1fr; /* 1 columna en cuadrícula */
-    flex-direction: column; /* Vista de lista en móviles */
-  }
-
-  /* Media query para pantallas aún más pequeñas (por ejemplo, móviles pequeños) */
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr; /* 1 columna en cuadrícula */
-    flex-direction: column; /* Vista de lista en móviles */
-    gap: 15px; /* Reduce el espacio entre los elementos */
+    grid-template-columns: 1fr;
   }
 `;
 
-// Tarjeta
 const Card = styled.div`
   background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  height: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  height: 450px;
   display: flex;
   flex-direction: column;
-  transition: 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 400px;
+  }
 `;
 
-// Header de la Tarjeta
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
 `;
 
-const CardIcon = styled.div`
+const CardIconContainer = styled.div`
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 12px;
+  background-color: rgba(232, 104, 51, 0.1);
 `;
 
 const CardTitle = styled.h2`
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
+  color: #333;
+  flex-grow: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const CardActionButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #e86833;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(232, 104, 51, 0.1);
+  }
 `;
 
 const CardBody = styled.div`
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
-  font-size: 14px;
-  color: #333;
+  padding: 20px;
+  position: relative;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+  }
 `;
