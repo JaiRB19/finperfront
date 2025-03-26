@@ -138,7 +138,7 @@ const SectionHeader = styled.div`
   display: flex;
   align-items: center;
   padding: 14px 20px;
-  background:rgba(247, 136, 57, 0.3);
+  background:rgba(219, 215, 212, 0.3);
   font-weight: 400;
   font-size: 18px;
   .icon {

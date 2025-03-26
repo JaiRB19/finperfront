@@ -23,6 +23,7 @@ import OpcionesHomeView from "../better/OpcionesHomeView";
 import TarjetaNuevaView from "../better/TarjetaNuevaView";
 import PerfilView from "../better/PerfilUsuarioView";
 import CalendarioView from "../better/CalendarioView";
+import HomeHeader from "../better/HomeHeader";
 import LetterLogo from '../assets/LetterLogo.svg'; // Ajusta la ruta si es necesario
 
 
@@ -78,7 +79,7 @@ function HomePage() {
 
 {/* Main Content */}
 <ContentContainer collapsed={collapsed}>
-    <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>Bienvenido, Usuario!</h1>
+    <HomeHeader />
     <div className="mt-4 overflow-auto" style={{ 
         flex: "1 1 auto",     /* Hace que ocupe todo el espacio disponible */
         width: "100%",        /* Ocupa todo el ancho disponible */

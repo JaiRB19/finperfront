@@ -122,7 +122,7 @@ const TitleArea = styled.div``;
 const Title = styled.h1`
   font-size: 28px;
   font-weight: 600;
-  color: #333;
+  color: #333333;
   margin: 0;
 `;
 

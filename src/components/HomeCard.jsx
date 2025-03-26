@@ -26,6 +26,7 @@ import InformesCardView from "../better/InformesView";
 import OpcionesCardView from "../better/OpcionesView";
 import IngresoGastoCardView from "../better/AddView";
 import InversionesView from "../better/InversionesView";
+import CardHeader from "../better/CardHeader";
 
 function HomeCard() {
   const [collapsed, setCollapsed] = useState(false);
@@ -79,7 +80,7 @@ function HomeCard() {
 
       {/* Main Content */}
       <ContentContainer collapsed={collapsed}>
-        <h1 style={{ fontSize: "24px", fontWeight: "bold" }}>Tu card</h1>
+        <CardHeader />
         <div className="mt-4 overflow-auto" style={{ 
             flex: "1 1 auto",
             width: "100%",
