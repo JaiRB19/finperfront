@@ -65,7 +65,6 @@ export default CardsInter;
 const Container = styled.div`
   padding: 16px;
   width: 100%;
-  max-width: 1200px;
   margin: 20px auto;
 `;
 

@@ -4,14 +4,15 @@ import styled from 'styled-components';
 function CalendarioView() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [events, setEvents] = useState({});
+    const [newEvent, setNewEvent] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
   
-    // Obtener el nombre del mes
     const monthNames = [
       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
       'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
     ];
   
-    // Generar los días del mes
     const generateDays = () => {
       const year = currentMonth.getFullYear();
       const month = currentMonth.getMonth();
@@ -19,12 +20,10 @@ function CalendarioView() {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const days = [];
   
-      // Días vacíos al inicio del mes
       for (let i = 0; i < firstDayOfMonth; i++) {
         days.push(<Day key={`empty-${i}`} empty />);
       }
   
-      // Días del mes
       for (let i = 1; i <= daysInMonth; i++) {
         const isSelected = selectedDate.getDate() === i && 
                            selectedDate.getMonth() === month && 
@@ -48,13 +47,23 @@ function CalendarioView() {
       return days;
     };
   
-    // Cambiar al mes anterior o siguiente
     const changeMonth = (direction) => {
       const newMonth = new Date(currentMonth);
       newMonth.setMonth(currentMonth.getMonth() + direction);
       setCurrentMonth(newMonth);
     };
 
+    const addEvent = () => {
+        if (!newEvent.trim()) return;
+        const dateKey = selectedDate.toDateString();
+        setEvents({
+            ...events,
+            [dateKey]: [...(events[dateKey] || []), newEvent]
+        });
+        setNewEvent('');
+        setIsModalOpen(false);
+    };
+  
   return (
     <PageContainer>
       <CalendarContainer>
@@ -81,8 +90,14 @@ function CalendarioView() {
             <CardTitle>Añadir Evento</CardTitle>
           </CardHeader>
           <CardContent>
-            <EventTitle>No hay eventos para este día</EventTitle>
-            <AddEventButton>+ Añadir Evento</AddEventButton>
+            {events[selectedDate.toDateString()]?.length > 0 ? (
+              events[selectedDate.toDateString()].map((event, index) => (
+                <EventTitle key={index}>{event}</EventTitle>
+              ))
+            ) : (
+              <EventTitle>No hay eventos para este día</EventTitle>
+            )}
+            <AddEventButton onClick={() => setIsModalOpen(true)}>+ Añadir Evento</AddEventButton>
           </CardContent>
         </Card>
 
@@ -94,27 +109,23 @@ function CalendarioView() {
             <NoEventsText>No hay eventos próximos</NoEventsText>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumen Mensual</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <SummaryItem positive>
-              <span>Ingresos</span>
-              <span>+$30,000</span>
-            </SummaryItem>
-            <SummaryItem negative>
-              <span>Gastos</span>
-              <span>-$13,500</span>
-            </SummaryItem>
-            <SummaryItem balance>
-              <span>Balance</span>
-              <span>+$16,500</span>
-            </SummaryItem>
-          </CardContent>
-        </Card>
       </SidePanel>
+
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <h3>Nuevo Evento</h3>
+            <input
+              type="text"
+              value={newEvent}
+              onChange={(e) => setNewEvent(e.target.value)}
+              placeholder="Escribe el evento"
+            />
+            <Button onClick={addEvent}>Guardar</Button>
+            <CancelButton onClick={() => setIsModalOpen(false)}>Cancelar</CancelButton>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </PageContainer>
   );
 }
@@ -125,7 +136,6 @@ export default CalendarioView;
 const PageContainer = styled.div`
   display: flex;
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
   gap: 30px;
   padding: 20px;
@@ -264,7 +274,7 @@ const EventTitle = styled.p`
 `;
 
 const AddEventButton = styled.button`
-  background-color: #e86833;
+  background-color: #D9632A;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -273,10 +283,10 @@ const AddEventButton = styled.button`
   transition: background-color 0.2s ease;
   margin-top: auto;
   align-self: center;
+  transition: 0.3s;
 
-  &:hover {
-    background-color: #d45a22;
-  }
+    &:hover {
+    background: #F78839;
 `;
 
 const NoEventsText = styled.p`
@@ -296,4 +306,51 @@ const SummaryItem = styled.div`
     props.balance ? '#e86833' : '#1c1c1e'
   };
   font-weight: ${props => props.balance ? '600' : '400'};
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  text-align: center;
+`;
+
+const Button = styled.button`
+  background: #D9632A;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+
+    &:hover {
+    background: #F78839;
+  }
+`;
+
+const CancelButton = styled(Button)`
+  background:rgb(146, 146, 146);
+  transition: 0.3s;
+
+    &:hover {
+    background:rgb(102, 102, 102);
+  }
 `;

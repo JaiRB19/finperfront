@@ -159,6 +159,7 @@ const CreateButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: 0.3s;
   
   &:hover {
     background: #F78839;
@@ -195,4 +196,5 @@ const ContentContainer = styled.div`
   justify-content: center; /* Centra verticalmente */
   align-items: center;     /* Centra horizontalmente */
   overflow-y: auto;      /* Permite scroll si el contenido es muy largo */
+  
 `;

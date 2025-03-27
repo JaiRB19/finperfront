@@ -181,7 +181,7 @@ const Container = styled.div`
 `;
 
 const MaxWidthContainer = styled.div`
-  width: 95%;
+  width: 100%;
 
   margin: 0 auto;
 `;

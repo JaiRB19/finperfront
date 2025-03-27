@@ -158,6 +158,7 @@ const CreateButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: 0.3s;
   
   &:hover {
     background: #F78839;

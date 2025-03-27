@@ -288,7 +288,7 @@ const Container = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  max-width: 95%;
+  max-width: 100%;
   margin: 0 auto;
 `;
 

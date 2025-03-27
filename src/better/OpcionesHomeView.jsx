@@ -92,8 +92,7 @@ export default function OpcionesHomeView() {
 }
 
 const Container = styled.div`
-  width: 95%;
-  max-width: 1200px;
+  width: 100%;
   padding: 16px;
   margin: auto;
 `;
