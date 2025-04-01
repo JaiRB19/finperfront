@@ -6,6 +6,8 @@ import Register from './components/Register';
 import HomePage from './components/Home';
 import HomeCard from './components/HomeCard';
 import PerfilView from './better/PerfilUsuarioView';
+import SyncfyWidgetComponent from "./components/SyncfyWidgetComponent";
+
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/homecard" element={<HomeCard />} />
+        <Route path="/syncfy" element={<SyncfyWidgetComponent />} />
       </Routes>
     </div>
   );
