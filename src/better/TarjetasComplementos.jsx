@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate  } from 'react-router-dom';
 import styled from "styled-components";
 import { CreditCard as CreditCardIcon, Wallet, DollarSign } from "lucide-react";
 
@@ -8,10 +9,22 @@ const CardsCredit = ({
   gasto1 = "", gasto2 = "", gasto3 = "",
   fechaCorte = "", fechaPago = "", oculto 
 }) => {
+
+const navigate = useNavigate();
+
+const handleCard = () => {
+  navigate('/homecard');
+};
+
   return (
     <Container>
       <CardCredito>
-        <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px" }}>CRÉDITO</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
+            CRÉDITO
+          </h1>
+          <ButtonEntrar onClick={handleCard}>Entrar</ButtonEntrar>
+        </div>
         <Row>
           {/* Tarjeta de crédito con estilo iOS */}
           <CreditCardStyled creditCard>
@@ -63,10 +76,16 @@ const CardsMonedero = ({
   ingreso1 = "", ingreso2 = "", ingreso3 = "",
   gasto1 = "", gasto2 = "", gasto3 = "", oculto
 }) => {
+
   return (
     <Container>
       <CardMonedero>
-        <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px" }}>MONEDERO</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
+            MONEDERO
+          </h1>
+          <ButtonEntrar>Entrar</ButtonEntrar>
+        </div>
         <Row>
           {/* Monedero con estilo iOS */}
           <MonederoStyled>
@@ -117,7 +136,12 @@ const CardsDebit = ({
     return (
       <Container>
         <CardDebito>
-          <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px" }}>DÉBITO</h1>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
+            DÉBITO
+          </h1>
+          <ButtonEntrar>Entrar</ButtonEntrar>
+        </div>
           <Row>
             {/* Tarjeta de débito con estilo iOS */}
             <DebitCardStyled>
@@ -443,3 +467,33 @@ const theme = {
   const DateValue = styled.span`
     font-weight: 600;
   `;
+
+  const ButtonEntrar = styled.button`
+  background-color: rgba(255, 149, 0, 0.1); /* Naranja iOS con transparencia */
+  border: none;
+  border-radius: 12px; /* Bordes más redondeados, estilo iOS moderno */
+  padding: 12px 20px; /* Padding más generoso */
+  cursor: pointer;
+  font-weight: 500; /* Semi-bold para texto iOS */
+  box-shadow: none; /* iOS moderno usa menos sombras */
+  transition: all 0.2s ease; /* Transición ligeramente más rápida */
+  color: #ff9500; /* Naranja iOS estándar para el texto */
+  font-size: 17px; /* Tamaño de fuente estándar iOS */
+  font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif; /* Fuentes iOS */
+  
+  /* Estado de hover */
+  &:hover {
+    background-color: rgba(255, 149, 0, 0.15);
+  }
+  
+  /* Estado activo al hacer clic */
+  &:active {
+    background-color: rgba(255, 149, 0, 0.2);
+    transform: scale(0.98); /* Efecto sutil de presión */
+  }
+  
+  /* Quitar el outline al hacer focus para mantener el estilo iOS */
+  &:focus {
+    outline: none;
+  }
+`;
