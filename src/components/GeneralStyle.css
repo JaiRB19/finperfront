@@ -48,3 +48,19 @@
     color: #ffffff;
     transition: all 0.3s ease;
   }
+
+  .icon-option-home {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    transition: 0.3s;
+
+    &:hover {
+      transform: scale(1.1);
+      color: #e86833;
+    }
+
+    &:active {
+      transform: scale(0.95);
+      color: #d9632a;
+    }
+  }

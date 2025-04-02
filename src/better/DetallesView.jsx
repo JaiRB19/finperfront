@@ -5,15 +5,13 @@ export default function DetalleCardView() {
   const [selectedPeriod, setSelectedPeriod] = useState("current");
 
   const barData = [
-    { date: "31 ene", percentage: 45, amount: 150, color: "#D9632A" },
-    { date: "29 ene", percentage: 23, amount: 120, color: "#F78839" },
-    { date: "25 ene", percentage: 18, amount: 80, color: "#FFA559" },
-    { date: "22 ene", percentage: 15, amount: 50, color: "#FFD6A5" },
+    { date: "15 mar", percentage: 50, amount: 340, color: "#D9632A" },
+    { date: "14 mar", percentage: 50, amount: 350, color: "#FFD6A5" },
   ];
 
   const summary = {
-    expenses: -0,
-    income: 0,
+    expenses: -700,
+    income: 3000,
   };
 
   return (
@@ -23,13 +21,21 @@ export default function DetalleCardView() {
 
         {/* Period Selector */}
         <PeriodSelector>
-          {["ago", "sep", "oct", "nov", "last", "current"].map((period, index) => (
+          {["nov", "dic", "ene", "feb", "last", "current"].map((period, index) => (
             <PeriodButton
               key={index}
               active={selectedPeriod === period}
               onClick={() => setSelectedPeriod(period)}
             >
-              {period === "last" ? "Mes pasado" : period === "current" ? "Este mes" : `${period} 2024`}
+      {period === "last"
+        ? "Mes pasado"
+        : period === "current"
+        ? "Este mes"
+        : period === "ene"
+        ? "ene 2025"
+        : period === "feb"
+        ? "feb 2025"
+        : `${period} 2024`}
             </PeriodButton>
           ))}
         </PeriodSelector>

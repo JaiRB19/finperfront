@@ -15,13 +15,18 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-export default function OpcionesHomeView() {
+export default function OpcionesHomeView({ changeComponent }) {
   const [notificaciones, setNotificaciones] = useState(true);
   const [recordatorios, setRecordatorios] = useState(false);
   const [biometrico, setBiometrico] = useState(true);
   const [isDark, setIsDark] = useState(false);
 
   const toggleTheme = () => setIsDark(!isDark);
+
+  // Llama a la función changeComponent pasando el nombre del componente al que quieres cambiar
+  const handleClick = () => {
+    changeComponent("perfil");
+  };
 
   return (
     <Container>
@@ -33,7 +38,7 @@ export default function OpcionesHomeView() {
             <h3>Jai Ortiz</h3>
             <p>jaielivan.oc04@gmail.com</p>
           </div>
-          <ChevronRightIcon className="icon" />
+          <ChevronRightIcon className="icon-option-home" onClick={handleClick}/>
         </CardHeader>
       </Card>
 
@@ -64,7 +69,7 @@ export default function OpcionesHomeView() {
           </SettingItem>
           <SettingItem>
             <span>Cambiar contraseña</span>
-            <ChevronRightIcon className="icon" />
+            <ChevronRightIcon className="icon-option-home" />
           </SettingItem>
         </CardBody>
       </Card>

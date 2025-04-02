@@ -10,6 +10,7 @@ import {
     PieChartIcon, 
     MoreHorizontal,
     BookOpenText,
+    PiggyBank,
     ChartSpline, 
     Menu, 
     Plus 
@@ -26,7 +27,9 @@ import InformesCardView from "../better/InformesView";
 import OpcionesCardView from "../better/OpcionesView";
 import IngresoGastoCardView from "../better/AddView";
 import InversionesView from "../better/InversionesView";
+import PerfilView from "../better/PerfilUsuarioView";
 import CardHeader from "../better/CardHeader";
+import MetasAhorroView from "../better/MetasAhorroView";
 
 function HomeCard() {
   const [collapsed, setCollapsed] = useState(false);
@@ -38,7 +41,7 @@ function HomeCard() {
     { icon: <BarChart2 size={20} />, label: "Graficos", component: "graficos" },
     { icon: <ListIcon size={20} />, label: "Detalles", component: "detalles" },
     { icon: <PieChartIcon size={20} />, label: "Informes", component: "informes" },
-    { icon: <ChartSpline size={20} />, label: "Inversiones", component: "inversiones" },
+    { icon: <PiggyBank size={20} />, label: "Ahorro", component: "ahorros" },
     { icon: <Settings size={20} />, label: "Opciones", component: "opciones" },
   ];
 
@@ -52,6 +55,11 @@ function HomeCard() {
   // Manejador para cambiar al componente de Añadir
   const handleAddClick = () => {
     setSelectedComponent("ingresoGasto");
+  };
+
+  // Función para cambiar el componente seleccionado desde otros componentes
+  const changeComponentCard = (component) => {
+    setSelectedComponent(component);
   };
 
   return (
@@ -80,7 +88,7 @@ function HomeCard() {
 
       {/* Main Content */}
       <ContentContainer collapsed={collapsed}>
-        <CardHeader />
+        <CardHeader changeComponentCard={changeComponentCard} />
         <div className="mt-4 overflow-auto" style={{ 
             flex: "1 1 auto",
             width: "100%",
@@ -92,9 +100,11 @@ function HomeCard() {
           {selectedComponent === "graficos" && <GraficosCardView />}
           {selectedComponent === "detalles" && <DetalleCardView />}
           {selectedComponent === "informes" && <InformesCardView />}
-          {selectedComponent === "opciones" && <OpcionesCardView />}
+          {selectedComponent === "opciones" && <OpcionesCardView changeComponentCard={changeComponentCard} />}
           {selectedComponent === "ingresoGasto" && <IngresoGastoCardView />}
-          {selectedComponent === "inversiones" && <InversionesView />}
+          {selectedComponent === "inversiones" && <InversionesView changeComponentCard={changeComponentCard} />}
+          {selectedComponent === "perfil" && <PerfilView />}
+          {selectedComponent === "ahorros" && <MetasAhorroView />}
         </div>
       </ContentContainer>
     </div>

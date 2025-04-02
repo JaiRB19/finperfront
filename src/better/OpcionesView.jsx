@@ -1,139 +1,204 @@
+import React from "react";
+import styled from "styled-components";
 import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { ChevronDown } from "lucide-react";
 
-const OpcionesCardView = () => {
+const OpcionesCardView = ({changeComponentCard}) => {
+
+  const handleChange = () => {
+    changeComponentCard("inversiones");
+  };
+
   return (
-    <div className="container-fluid">
-      <div className="row g-4 justify-content-center">
-        {/* Columna Izquierda - Opciones */}
-        <div className="col-lg-6 col-xl-4 d-flex justify-content-start">
-          <div
-            className="card w-100 text-center shadow"
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "25px",
-              height: "480px",
-              padding: "32px",
-              border: "none",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h5 className="text-dark fw-semibold mb-4" style={{ fontSize: "1.3rem" }}>
-              Opciones
-            </h5>
-            <div className="text-start">
-              <div className="mb-4">
-                <label className="text-secondary fw-medium mb-2 d-block">Cambiar Nombre</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  style={{
-                    borderRadius: "12px",
-                    border: "1px solid #E0E0E0",
-                    padding: "10px 14px",
-                    fontSize: "0.95rem",
-                  }}
-                />
-              </div>
+    <Container>
+      <CardContainer>
+        {/* Left Column - Options */}
+        <Card>
+          <CardTitle>Opciones</CardTitle>
+          <FormGroup>
+            <Label>Cambiar Nombre</Label>
+            <Input type="text" placeholder="Nombre de la tarjeta" />
+          </FormGroup>
 
-              <div className="mb-4">
-                <label className="text-secondary fw-medium mb-2 d-block">Moneda</label>
-                <select
-                  className="form-select"
-                  style={{
-                    borderRadius: "12px",
-                    border: "1px solid #E0E0E0",
-                    padding: "10px 14px",
-                    fontSize: "0.95rem",
-                  }}
-                >
-                  <option>MXN</option>
-                  <option>PEJECOINS</option>
-                </select>
-              </div>
+          <FormGroup>
+            <Label>Moneda</Label>
+            <Select>
+              <option>MXN</option>
+              <option>DOLAR</option>
+              <option>EURO</option>
+            </Select>
+          </FormGroup>
 
-              <div className="mb-4">
-                <p className="text-secondary fw-medium mb-1">Exportar Archivo</p>
-                <button
-                  className="btn btn-sm rounded-pill px-4"
-                  style={{
-                    backgroundColor: "#D9632A",
-                    color: "#fff",
-                    border: "none",
-                  }}
-                  onMouseOver={(e) => (e.target.style.backgroundColor = "#F78839")}
-                  onMouseOut={(e) => (e.target.style.backgroundColor = "#D9632A")}
-                >
-                  Exportar
-                </button>
-              </div>
+          <ButtonGroup>
+            <ActionText>Exportar Archivo</ActionText>
+            <Button primary>Exportar</Button>
+          </ButtonGroup>
 
-              <div>
-                <p className="text-danger fw-medium mb-1">Eliminar Tarjeta</p>
-                <button
-                  className="btn btn-sm rounded-pill px-4"
-                  style={{
-                    backgroundColor: "#fff",
-                    color: "#D9632A",
-                    border: "1px solid #D9632A",
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.backgroundColor = "#F78839";
-                    e.target.style.color = "#fff";
-                    e.target.style.borderColor = "#F78839";
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.backgroundColor = "#fff";
-                    e.target.style.color = "#D9632A";
-                    e.target.style.borderColor = "#D9632A";
-                  }}
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          <ButtonGroup>
+            <ActionText danger>Eliminar Tarjeta</ActionText>
+            <Button outline danger>Eliminar</Button>
+          </ButtonGroup>
+        </Card>
 
-        {/* Columna Derecha - Operaciones */}
-        <div className="col-lg-6 col-xl-4 d-flex justify-content-end">
-          <div
-            className="card w-100 text-center shadow"
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "25px",
-              height: "480px",
-              padding: "32px",
-              border: "none",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h5 className="text-dark fw-semibold mb-4" style={{ fontSize: "1.3rem" }}>
-              Operaciones
-            </h5>
-            <div className="text-start">
-              <div className="mb-4 d-flex justify-content-between align-items-center">
-                <span className="text-secondary fw-medium">Simulador Virtual</span>
-                <button
-                  className="btn btn-sm rounded-pill px-4"
-                  style={{
-                    backgroundColor: "#D9632A",
-                    color: "#fff",
-                    border: "none",
-                  }}
-                  onMouseOver={(e) => (e.target.style.backgroundColor = "#F78839")}
-                  onMouseOut={(e) => (e.target.style.backgroundColor = "#D9632A")}
-                >
-                  Entrar
-                </button>
-              </div>
-              <p className="text-muted fst-italic">Muy Pronto...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* Right Column - Operations */}
+        <Card>
+          <CardTitle>Operaciones</CardTitle>
+          <OperationRow>
+            <OperationLabel>Simulador Virtual</OperationLabel>
+            <Button primary onClick={handleChange}>Entrar</Button>
+          </OperationRow>
+          <ComingSoon>Muy Pronto...</ComingSoon>
+        </Card>
+      </CardContainer>
+    </Container>
   );
 };
 
 export default OpcionesCardView;
+
+// Orange-focused iOS-inspired color palette
+const colors = {
+  primary: "#FF9500", // iOS orange
+  primaryDark: "#D9632A", // Darker orange for hover states
+  primaryLight: "#FFBF66", // Lighter orange for effects
+  danger: "#FF3B30", // iOS red
+  cardBg: "#FFFFFF",
+  text: "#000000",
+  textSecondary: "#8E8E93", // iOS gray
+  border: "#E5E5EA", // iOS light gray for borders
+};
+
+// iOS-inspired styled components with orange theme
+const Container = styled.div`
+  padding: 24px;
+  width: 100%;
+  background-color: ${colors.background};
+`;
+
+const CardContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+`;
+
+const Card = styled.div`
+  background-color: ${colors.cardBg};
+  border-radius: 16px;
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 480px;
+`;
+
+const CardTitle = styled.h5`
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+  color: ${colors.text};
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: ${colors.textSecondary};
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid ${colors.border};
+  background-color: ${colors.cardBg};
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 1px ${colors.primary}40;
+  }
+`;
+
+const Select = styled.select`
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid ${colors.border};
+  background-color: ${colors.cardBg};
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FF9500%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 1px ${colors.primary}40;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  margin-bottom: 20px;
+`;
+
+const ActionText = styled.p`
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: ${props => props.danger ? colors.danger : colors.textSecondary};
+`;
+
+const Button = styled.button`
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: ${props => props.primary ? colors.primary : 'transparent'};
+  color: ${props => props.primary ? colors.cardBg : props.outline ? colors.primary : colors.danger};
+  border: ${props => props.outline ? `1px solid ${props.danger ? colors.danger : colors.primary}` : 'none'};
+  
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    background-color: ${props => props.primary ? colors.primaryDark : props.outline && !props.danger ? colors.primaryLight : 'transparent'};
+  }
+  
+  &:active {
+    transform: translateY(1px);
+  }
+`;
+
+const ComingSoon = styled.p`
+  font-style: italic;
+  color: ${colors.textSecondary};
+  font-size: 14px;
+  margin-top: 12px;
+`;
+
+const OperationRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+`;
+
+const OperationLabel = styled.span`
+  font-size: 15px;
+  font-weight: 500;
+  color: ${colors.textSecondary};
+`;

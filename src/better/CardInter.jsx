@@ -3,7 +3,7 @@ import { Eye, EyeClosed } from 'lucide-react';
 import styled from "styled-components";
 import { CardsCredit, CardsMonedero, CardsDebit } from "./TarjetasComplementos";
 
-const CardsInter = () => {
+const CardsInter = ({ changeComponent }) => {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [oculto, setOculto] = useState(false);
@@ -21,6 +21,11 @@ const CardsInter = () => {
     (filter === "all" || card.type === filter) &&
     Object.values(card).some(value => typeof value === "string" && value.includes(search))
   );
+
+  // Llama a la función changeComponent pasando el nombre del componente al que quieres cambiar
+  const handleClick = () => {
+    changeComponent("syncfy");
+  };
 
   return (
     <Container>
@@ -40,7 +45,7 @@ const CardsInter = () => {
       />
 
       <ButtonRow>
-        <CreateButton>Añadir</CreateButton>
+        <CreateButton onClick={handleClick}>Añadir</CreateButton>
         <EyeButton onClick={toggleOcultar}>
           {oculto ? <EyeClosed size={24} /> : <Eye size={24} />}
           <span>{oculto ? 'Mostrar' : 'Ocultar'}</span>

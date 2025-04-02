@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import styled from 'styled-components';
-import { User, Bell, Settings, X } from 'lucide-react';
+import { User, Bell, Settings, X, LogOut, UserCircle } from 'lucide-react';
 
-const HomeHeader = () => {
+const HomeHeader = ({ changeComponent }) => {
   const userName = "Usuario";
   const [notifications, setNotifications] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+  const userIconRef = useRef(null);
+  const navigate = useNavigate();
   
   const currentDate = new Date().toLocaleDateString('es-ES', {
     weekday: 'long',
@@ -14,18 +19,62 @@ const HomeHeader = () => {
     month: 'long'
   });
 
+  // Manejar clics fuera del menú de usuario
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target) && 
+          userIconRef.current && !userIconRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleClearNotifications = () => setNotifications(0);
+  
+  const handleViewProfile = () => {
+    setShowUserMenu(false);
+    changeComponent("perfil");
+    // Aquí puedes navegar a la página de perfil
+  };
+  
+  const handleLogout = () => {
+    setShowUserMenu(false);
+    navigate('/');
+    // Aquí puedes implementar la lógica de cierre de sesión
+  };
+
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu);
+  };
 
   return (
     <HeaderContainer>
       <UserSection>
-        <UserIconWrapper>
+        <UserIconWrapper ref={userIconRef} onClick={toggleUserMenu}>
           <User color="#E67E22" size={24} />
         </UserIconWrapper>
         <div>
           <WelcomeText>¡Bienvenido, {userName}!</WelcomeText>
           <DateText>{currentDate}</DateText>
         </div>
+        
+        {/* Menú de usuario */}
+        <UserMenu ref={userMenuRef} show={showUserMenu}>
+          <UserMenuItem onClick={handleViewProfile}>
+            <UserCircle size={18} color="#E67E22" />
+            Ver perfil
+          </UserMenuItem>
+          <MenuDivider />
+          <UserMenuItem onClick={handleLogout}>
+            <LogOut size={18} color="#E74C3C" />
+            Cerrar sesión
+          </UserMenuItem>
+        </UserMenu>
       </UserSection>
       
       <IconsSection>
@@ -54,13 +103,13 @@ const HomeHeader = () => {
           fontSize: '17px',
           fontWeight: '500',
           WebkitTapHighlightColor: 'transparent',
-          transition: 'background-color 0.2s ease-in-out', // Agrega la transición
+          transition: 'background-color 0.2s ease-in-out',
         }}
         onMouseOver={(e) => {
-          e.target.style.backgroundColor = '#e0e0e0'; // Cambia el color al hacer hover
+          e.target.style.backgroundColor = '#e0e0e0';
         }}
         onMouseOut={(e) => {
-          e.target.style.backgroundColor = '#f0f0f0'; // Restaura el color original
+          e.target.style.backgroundColor = '#f0f0f0';
         }}
       >
         Marcar como leído
@@ -80,104 +129,170 @@ const HomeHeader = () => {
 
 export default HomeHeader;
 
-// Styled Components
-const HeaderContainer = styled.div`
+// Contenedor principal del header
+const HeaderContainer = styled.header`
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   height: 60px;
   padding: 24px;
-  border-radius: 0.5rem;
 `;
 
+// Sección izquierda con usuario
 const UserSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 12px;
+  position: relative;
 `;
 
+// Contenedor del icono de usuario
 const UserIconWrapper = styled.div`
-  background-color: #F5CBA7;
-  padding: 0.5rem;
-  border-radius: 9999px;
-`;
-
-const WelcomeText = styled.h1`
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #6E2C00;
-`;
-
-const DateText = styled.p`
-  font-size: 0.875rem;
-  color: #A04000;
-  text-transform: capitalize;
-`;
-
-const IconsSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #FEF5EC;
+  border-radius: 50%;
+  cursor: pointer;
 `;
 
+// Texto de bienvenida
+const WelcomeText = styled.h2`
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+`;
+
+// Texto de fecha
+const DateText = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: #777;
+`;
+
+// Sección de iconos a la derecha
+const IconsSection = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
+// Contenedor del icono de notificaciones
+const NotificationWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FEF5EC;
+  border-radius: 50%;
+`;
+
+// Contador de notificaciones
 const NotificationBadge = styled.span`
   position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
+  top: 0;
+  right: 0;
   background-color: #E74C3C;
   color: white;
-  font-size: 0.75rem;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const NotificationWrapper = styled.div`
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-`;
-
+// Icono de configuración
 const SettingsIcon = styled.div`
   cursor: pointer;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: rotate(20deg);
-  }
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FEF5EC;
+  border-radius: 50%;
 `;
 
+// Panel lateral
 const SidePanel = styled.div`
   position: fixed;
   top: 0;
-  right: ${({ show }) => (show ? '0' : '-300px')};
+  right: ${props => props.show ? '0' : '-300px'};
   width: 300px;
   height: 100vh;
-  background: white;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  padding: 1.5rem;
-  transition: right 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: right 0.3s ease;
+  z-index: 1000;
 `;
 
+// Encabezado del panel
 const PanelHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
 `;
 
+// Botón de cierre
 const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+    border-radius: 50%;
+  }
+`;
+
+// Nuevo menú desplegable de usuario
+const UserMenu = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 180px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  z-index: 100;
+  display: ${props => props.show ? 'block' : 'none'};
+`;
+
+// Opción del menú de usuario
+const UserMenuItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+// Separador del menú
+const MenuDivider = styled.div`
+  height: 1px;
+  background-color: #eee;
+  margin: 4px 0;
 `;

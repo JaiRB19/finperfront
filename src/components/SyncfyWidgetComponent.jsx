@@ -73,7 +73,7 @@ const WidgetContainer = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin: 20px;
-  max-width: 800px;
+  width: 70%;
   margin-left: auto;
   margin-right: auto;
 `;

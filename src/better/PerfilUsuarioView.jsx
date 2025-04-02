@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { UserIcon, ArrowLeft, Camera, Mail, Phone, MapPin, Calendar, Lock, Bell, Eye, Shield, Save } from "lucide-react";
 
 // Main Component
-const PerfilView = () => {
+const PerfilView = ({ changeComponent }) => {
   const [theme] = useState({ isDark: false }); // Replace with your actual theme logic
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
@@ -49,12 +49,17 @@ const PerfilView = () => {
     setIsEditing(false);
   };
 
+  // Llama a la función changeComponent pasando el nombre del componente al que quieres cambiar
+  const HandleChangeComponent = () => {
+    changeComponent("opciones");
+  };
+
   return (
     <Container>
       <ContentWrapper>
         {/* Header */}
         <Header>
-          <BackButton onClick={() => window.history.back()}>
+          <BackButton onClick={HandleChangeComponent}>
             <ArrowLeft size={20} />
           </BackButton>
           <Title theme={theme}>Perfil de Usuario</Title>

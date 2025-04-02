@@ -1,11 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate  } from 'react-router-dom';
 import styled from 'styled-components';
-import { Bell, CreditCard, ChevronDown, X, UserCircle, LogOut } from 'lucide-react';
+import { Bell, CreditCard, ChevronDown, X, UserCircle, LogOut, Settings } from 'lucide-react';
 
-const CardHeader = () => {
+const CardHeader = ({ changeComponentCard }) => {
+  const [notifications, setNotifications] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileOptions, setShowProfileOptions] = useState(false);
+  const profileRef = useRef(null);
+  const notificationRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileOptions(false);
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleClearNotifications = () => {
+    setNotifications(0);
+    setShowNotifications(false);
+  };
   
+  const handleViewProfile = () => {
+    setShowProfileOptions(false);
+    changeComponentCard("perfil");
+    // Aquí puedes navegar a la página de perfil
+  };
+  
+  const handleLogout = () => {
+    setShowProfileOptions(false);
+    navigate('/');
+    // Aquí puedes implementar la lógica de cierre de sesión
+  };
+
   return (
     <HeaderContainer>
       <CardInfo>
@@ -15,23 +51,26 @@ const CardHeader = () => {
           <CardNumber>**** *123</CardNumber>
         </CardDetails>
       </CardInfo>
-      <RightSection>
+      
+      <RightSection ref={profileRef}>
         <NotificationWrapper onClick={() => setShowNotifications(!showNotifications)}>
-          <Bell size={22} color="white" />
-          <NotificationBadge>3</NotificationBadge>
+          <Bell size={20} color="white" />
+          {notifications > 0 && <NotificationBadge>{notifications}</NotificationBadge>}
         </NotificationWrapper>
+        
         <UserInitials onClick={() => setShowProfileOptions(!showProfileOptions)}>
           <span>JAI</span>
           <ChevronDown size={16} color="white" />
         </UserInitials>
+        
         {showProfileOptions && (
           <ProfileOptions>
-            <OptionItem>
-              <UserCircle size={18} color="#FF7F50" />
+            <OptionItem onClick={handleViewProfile}>
+              <UserCircle size={18} color="#E67E22" />
               Ver Perfil
             </OptionItem>
-            <OptionItem>
-              <LogOut size={18} color="#FF4500" />
+            <OptionItem onClick={handleLogout}>
+              <LogOut size={18} color="#E74C3C" />
               Cerrar Sesión
             </OptionItem>
           </ProfileOptions>
@@ -45,7 +84,33 @@ const CardHeader = () => {
             <X size={20} />
           </CloseButton>
         </PanelHeader>
-        <p>Tienes 3 nuevas notificaciones.</p>
+        
+        <p>Tienes {notifications} nuevas notificaciones.</p>
+        
+        <NotificationContent>
+          {notifications > 0 && (
+            <>
+              <NotificationItem>
+                <strong>Nueva transacción</strong>
+                <p>Se ha registrado un cargo de $350.00 en tu tarjeta.</p>
+              </NotificationItem>
+              
+              <NotificationItem>
+                <strong>Promoción especial</strong>
+                <p>Obtén 2% de cashback en tus próximas compras.</p>
+              </NotificationItem>
+              
+              <NotificationItem>
+                <strong>Seguridad</strong>
+                <p>Actualiza tus datos de contacto para mayor seguridad.</p>
+              </NotificationItem>
+              
+              <ClearButton onClick={handleClearNotifications}>
+                Marcar como leído
+              </ClearButton>
+            </>
+          )}
+        </NotificationContent>
       </SidePanel>
     </HeaderContainer>
   );
@@ -53,149 +118,215 @@ const CardHeader = () => {
 
 export default CardHeader;
 
-const HeaderContainer = styled.div`
+// Contenedor principal del header
+const HeaderContainer = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  margin-bottom: 20px;
   width: 100%;
   height: 60px;
   padding: 24px;
-  background: linear-gradient(135deg, #FF7F50, #FF4500);
-  color: white;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
 `;
 
+// Información de la tarjeta
 const CardInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 `;
 
+// Detalles de la tarjeta
 const CardDetails = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const CardType = styled.p`
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 2px;
+// Tipo de tarjeta
+const CardType = styled.h2`
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
 `;
 
+// Número de tarjeta
 const CardNumber = styled.p`
+  margin: 0;
   font-size: 14px;
-  opacity: 0.85;
+  opacity: 0.9;
 `;
 
+// Sección derecha con iconos
 const RightSection = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   position: relative;
 `;
 
-const NotificationBadge = styled.span`
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: #FF2D55;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-`;
-
+// Contenedor del icono de notificaciones
 const NotificationWrapper = styled.div`
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  
   &:hover {
-    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
+// Contador de notificaciones
+const NotificationBadge = styled.span`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #E74C3C;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+// Iniciales del usuario
 const UserInitials = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  transition: background-color 0.2s;
+  gap: 8px;
+  
+  span {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  
   &:hover {
-    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.3);
   }
 `;
 
+// Menú de opciones de perfil
 const ProfileOptions = styled.div`
   position: absolute;
-  top: 45px;
+  top: 50px;
   right: 0;
-  background: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border-radius: 12px;
   width: 180px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 10;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  z-index: 100;
 `;
 
-const OptionItem = styled.button`
-  padding: 12px 16px;
-  font-size: 15px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
+// Opción del menú
+const OptionItem = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: background-color 0.2s ease;
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s;
   
   &:hover {
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
+  }
+  
+  &:first-child {
+    border-bottom: 1px solid #eee;
   }
 `;
 
+// Panel lateral para notificaciones
 const SidePanel = styled.div`
   position: fixed;
   top: 0;
-  right: ${({ show }) => (show ? '0' : '-300px')};
-  width: 280px;
+  right: ${props => props.show ? '0' : '-300px'};
+  width: 300px;
   height: 100vh;
-  background: white;
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  z-index: 20;
+  background-color: white;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: right 0.3s ease;
+  z-index: 1000;
+  color: #333;
 `;
 
+// Encabezado del panel
 const PanelHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  color: #333;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
 `;
 
+// Botón de cierre
 const CloseButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
-  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: #555;
   
   &:hover {
-    color: #333;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+  }
+`;
+
+// Contenido de notificaciones
+const NotificationContent = styled.div`
+  margin-top: 16px;
+`;
+
+// Notificación individual
+const NotificationItem = styled.div`
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  margin-bottom: 10px;
+  border-left: 3px solid #e67e22;
+`;
+
+// Botón para marcar como leído
+const ClearButton = styled.button`
+  background-color: #f0f0f0;
+  color: #e86833;
+  border: 1px solid #c8c7cc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 24px;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #e0e0e0;
   }
 `;

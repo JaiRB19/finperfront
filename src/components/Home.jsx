@@ -8,6 +8,7 @@ import {
     SettingsIcon,
     CalendarDays,
     UserRoundPen,
+    FolderSync,
     Menu, 
     Plus 
   } from "lucide-react";
@@ -26,6 +27,8 @@ import CalendarioView from "../better/CalendarioView";
 import HomeHeader from "../better/HomeHeader";
 import LetterLogo from '../assets/LetterLogo.svg'; // Ajusta la ruta si es necesario
 
+import SyncfyWidgetComponent from "./SyncfyWidgetComponent";
+
 
 function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -37,7 +40,6 @@ function HomePage() {
     { icon: <CreditCard />, label: "Card", component: "cards" },
     { icon: <NewspaperIcon />, label: "Novedades", component: "novedades" },
     { icon: <SettingsIcon />, label: "Configuración", component: "opciones" },
-    { icon: <UserRoundPen />, label: "Perfil", component: "perfil" },
     { icon: <CalendarDays />, label: "Calendario", component: "calendario" },
   ];
 
@@ -51,6 +53,11 @@ function HomePage() {
   // Manejador para cambiar al componente de Añadir
   const handleAddClick = () => {
     setSelectedComponent("ingresoGasto");
+  };
+
+  // Función para cambiar el componente seleccionado desde otros componentes
+  const changeComponent = (component) => {
+    setSelectedComponent(component);
   };
 
   return (
@@ -79,7 +86,7 @@ function HomePage() {
 
 {/* Main Content */}
 <ContentContainer collapsed={collapsed}>
-    <HomeHeader />
+    <HomeHeader changeComponent={changeComponent} />
     <div className="mt-4 overflow-auto" style={{ 
         flex: "1 1 auto",     /* Hace que ocupe todo el espacio disponible */
         width: "100%",        /* Ocupa todo el ancho disponible */
@@ -88,12 +95,13 @@ function HomePage() {
     }}>
           {/* Renderiza el componente según el estado seleccionado */}
           {selectedComponent === "dashboard" && <DashboardView />}
-          {selectedComponent === "cards" &&   <CardsInter/>}
+          {selectedComponent === "cards" &&   <CardsInter changeComponent={changeComponent} />}
           {selectedComponent === "novedades" && <NovedadesView />}
-          {selectedComponent === "opciones" && <OpcionesHomeView />}
+          {selectedComponent === "opciones" && <OpcionesHomeView changeComponent={changeComponent} />}
           {selectedComponent === "ingresoGasto" && <TarjetaNuevaView />}
-          {selectedComponent === "perfil" && <PerfilView />}
+          {selectedComponent === "perfil" && <PerfilView changeComponent={changeComponent} />}
           {selectedComponent === "calendario" && <CalendarioView />}
+          {selectedComponent === "syncfy" && <SyncfyWidgetComponent />}
     </div>
 </ContentContainer>
     </div>

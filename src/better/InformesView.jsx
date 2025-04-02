@@ -29,29 +29,57 @@ const InformesCardView = () => {
             {/* FILA SUPERIOR */}
             <div className="row g-3 mb-3">
                 <div className="col-md-8">
-                    <div className="card p-3 h-100 border-0 shadow-sm rounded-4" style={{ backgroundColor: "#FFFFFF" }}>
-                        <div className="d-flex justify-content-between align-items-center">
+                    <div className="card p-4 border-0 shadow-sm rounded-4 bg-white">
+                        <div className="d-flex justify-content-between align-items-center mb-3">
                             <h5 className="text-dark fw-semibold m-0">Estadísticas Mensuales</h5>
-                            <button className="btn p-0">
+                            <button className="btn p-0" aria-label="Ver más">
                                 <i className="bi bi-chevron-right text-dark"></i>
                             </button>
                         </div>
-                        <div className="mt-2">
-                            <div className="d-flex">
-                                <span className="fw-semibold">Enero</span>
-                                <div className="ms-auto d-flex gap-4 text-secondary fw-semibold">
-                                    <span>Gastos</span>
-                                    <span>Ingresos</span>
-                                    <span>Saldo</span>
+                        
+                        <div className="mb-2">
+                            <div className="d-flex align-items-center">
+                                <div className="me-auto">
+                                    <p className="fw-semibold text-muted mb-1">Marzo 2025</p>
+                                    <p className="fw-500 fs-6 mb-0" style={{ color: '#ff9800', fontSize: '18px' }}>
+                                        "Controlar las finanzas transforma el caos en claridad."
+                                    </p>
+                                </div>
+                                
+                                <div className="d-flex gap-4">
+                                    <div className="text-center">
+                                        <p className="text-secondary fw-semibold small mb-1">Gastos</p>
+                                        <p className="fw-bold text-danger mb-0">-700 MXN</p>
+                                    </div>
+                                    
+                                    <div className="text-center">
+                                        <p className="text-secondary fw-semibold small mb-1">Ingresos</p>
+                                        <p className="fw-bold text-success mb-0">+3,000 MXN</p>
+                                    </div>
+                                    
+                                    <div className="text-center">
+                                        <p className="text-secondary fw-semibold small mb-1">Saldo</p>
+                                        <p className="fw-bold text-dark mb-0">2,300 MXN</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="d-flex">
-                                <span className="fw-bold">$0</span>
-                                <div className="ms-auto d-flex gap-5">
-                                    <span className="fw-bold text-danger">$0</span>
-                                    <span className="fw-bold text-success">$0</span>
-                                </div>
-                            </div>
+                        </div>
+                        
+                        <div className="progress mt-3" style={{ height: "6px" }}>
+                            <div 
+                                className="progress-bar bg-danger" 
+                                style={{ width: "19%" }}
+                                aria-valuenow="19"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            ></div>
+                            <div 
+                                className="progress-bar bg-success" 
+                                style={{ width: "81%" }}
+                                aria-valuenow="81"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                            ></div>
                         </div>
                     </div>
                 </div>
