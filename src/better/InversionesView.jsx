@@ -1,632 +1,1063 @@
-import React, { useState, useEffect } from "react";
-import styled, { css, ThemeProvider } from "styled-components";
+import React, { useState, useEffect } from 'react';
 import { 
+  ArrowUpRight, 
   TrendingUp, 
+  PieChart, 
   DollarSign, 
-  Calendar, 
-  RefreshCw, 
-  Info, 
-  Download 
-} from "lucide-react";
-import GraficaInversion from "./GraficaInversion";
+  Clock, 
+  Plus,
+  Edit,
+  Trash2,
+  Info,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
+import styled from 'styled-components';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-const InversionesView = ({ isDarkMode = false }) => {
-  const theme = isDarkMode ? darkTheme : lightTheme;
-  
-  const [activeTab, setActiveTab] = useState("simple");
 
-  // Parámetros de inversión
-  const [initialAmount, setInitialAmount] = useState(10000);
-  const [monthlyContribution, setMonthlyContribution] = useState(1000);
-  const [interestRate, setInterestRate] = useState(8);
-  const [years, setYears] = useState(10);
-  const [investmentType, setInvestmentType] = useState("moderate");
-
-  // Resultados calculados
-  const [results, setResults] = useState({
-    finalBalance: 0,
-    totalContributions: 0,
-    totalInterest: 0,
-    yearlyData: [],
+const InversionesView = ({ changeComponentCard }) => {
+  // Estados
+  const [activeTab, setActiveTab] = useState('mis-inversiones');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [investments, setInvestments] = useState([]);
+  const [newInvestment, setNewInvestment] = useState({
+    name: '',
+    type: 'acciones',
+    amount: '',
+    date: '',
+    returnRate: '',
+    broker: '',
+    notes: ''
   });
+  const [expandedInvestment, setExpandedInvestment] = useState(null);
+  const [performanceData, setPerformanceData] = useState([]);
 
-  // Tipos de inversión predefinidos
-  const investmentTypes = {
-    conservative: { name: "Conservador", rate: 4, color: "#4CAF50" },
-    moderate: { name: "Moderado", rate: 8, color: "#D9632A" },
-    aggressive: { name: "Agresivo", rate: 12, color: "#E53935" },
-  };
-
-  // Calcular resultados cuando cambien los parámetros
+  // Datos de ejemplo (en una app real vendrían de una API)
   useEffect(() => {
-    calculateInvestment();
-  }, [initialAmount, monthlyContribution, interestRate, years, activeTab]);
-
-  // Cambiar tasa de interés cuando cambie el tipo de inversión
-  useEffect(() => {
-    if (investmentType && investmentTypes[investmentType]) {
-      setInterestRate(investmentTypes[investmentType].rate);
-    }
-  }, [investmentType]);
-
-  // Función para calcular la inversión
-  const calculateInvestment = () => {
-    let balance = initialAmount;
-    let totalContributions = initialAmount;
-    const yearlyData = [];
-
-    const monthlyRate = interestRate / 100 / 12;
-    const totalMonths = years * 12;
-
-    if (activeTab === "simple") {
-      // Interés simple
-      for (let year = 1; year <= years; year++) {
-        const yearInterest = balance * (interestRate / 100);
-        balance += yearInterest;
-
-        for (let month = 1; month <= 12; month++) {
-          balance += monthlyContribution;
-          totalContributions += monthlyContribution;
-        }
-
-        yearlyData.push({
-          year,
-          balance: Math.round(balance),
-          contributions: Math.round(totalContributions),
-          interest: Math.round(balance - totalContributions),
-        });
+    const mockInvestments = [
+      {
+        id: 1,
+        name: 'ETF S&P 500',
+        type: 'acciones',
+        amount: 50000,
+        date: '2023-01-15',
+        returnRate: 12.5,
+        broker: 'GBM',
+        notes: 'Inversión a largo plazo',
+        currentValue: 56250,
+        history: [
+          { date: '2023-01-15', value: 50000 },
+          { date: '2023-06-15', value: 52500 },
+          { date: '2024-01-15', value: 56250 }
+        ]
+      },
+      {
+        id: 2,
+        name: 'FIBRAS',
+        type: 'bienes-raices',
+        amount: 30000,
+        date: '2023-03-10',
+        returnRate: 8.2,
+        broker: 'CETES',
+        notes: 'Renta mensual',
+        currentValue: 32460,
+        history: [
+          { date: '2023-03-10', value: 30000 },
+          { date: '2023-09-10', value: 31200 },
+          { date: '2024-03-10', value: 32460 }
+        ]
       }
-    } else {
-      // Interés compuesto
-      for (let month = 1; month <= totalMonths; month++) {
-        // Aplicar interés mensual
-        const monthlyInterest = balance * monthlyRate;
-        balance += monthlyInterest;
+    ];
 
-        // Añadir contribución mensual
-        balance += monthlyContribution;
-        totalContributions += monthlyContribution;
+    const mockPerformance = [
+      { month: 'Ene', return: 2.1 },
+      { month: 'Feb', return: 1.8 },
+      { month: 'Mar', return: 3.2 },
+      { month: 'Abr', return: -0.5 },
+      { month: 'May', return: 2.7 },
+      { month: 'Jun', return: 1.5 }
+    ];
 
-        // Guardar datos anuales
-        if (month % 12 === 0) {
-          const year = month / 12;
-          yearlyData.push({
-            year,
-            balance: Math.round(balance),
-            contributions: Math.round(totalContributions),
-            interest: Math.round(balance - totalContributions),
-          });
-        }
-      }
-    }
+    setInvestments(mockInvestments);
+    setPerformanceData(mockPerformance);
+  }, []);
 
-    setResults({
-      finalBalance: Math.round(balance),
-      totalContributions: Math.round(totalContributions),
-      totalInterest: Math.round(balance - totalContributions),
-      yearlyData,
+  // Manejadores
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewInvestment(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddInvestment = (e) => {
+    e.preventDefault();
+    const newId = investments.length > 0 ? Math.max(...investments.map(i => i.id)) + 1 : 1;
+    
+    const investmentToAdd = {
+      ...newInvestment,
+      id: newId,
+      amount: parseFloat(newInvestment.amount),
+      returnRate: parseFloat(newInvestment.returnRate),
+      currentValue: parseFloat(newInvestment.amount) * (1 + parseFloat(newInvestment.returnRate)/100),
+      history: [{ 
+        date: new Date().toISOString().split('T')[0], 
+        value: parseFloat(newInvestment.amount) 
+      }]
+    };
+    
+    setInvestments([...investments, investmentToAdd]);
+    setNewInvestment({
+      name: '',
+      type: 'acciones',
+      amount: '',
+      date: '',
+      returnRate: '',
+      broker: '',
+      notes: ''
     });
+    setShowAddForm(false);
   };
 
-  // Formatear números como moneda
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
+  const handleDeleteInvestment = (id) => {
+    setInvestments(investments.filter(inv => inv.id !== id));
   };
 
-  // Generar puntos para el gráfico
-  const generateChartPoints = () => {
-    if (!results.yearlyData.length) return "";
-
-    const maxBalance = Math.max(...results.yearlyData.map((d) => d.balance));
-    const height = 200;
-    const width = 500;
-    const padding = 40;
-
-    const points = results.yearlyData.map((data, index) => {
-      const x = padding + index * ((width - padding * 2) / (results.yearlyData.length - 1 || 1));
-      const y = height - padding - (data.balance / maxBalance) * (height - padding * 2);
-      return `${x},${y}`;
-    });
-
-    return points.join(" ");
+  const toggleExpandInvestment = (id) => {
+    setExpandedInvestment(expandedInvestment === id ? null : id);
   };
 
-  // Generar puntos para el área bajo la curva
-  const generateAreaPoints = () => {
-    if (!results.yearlyData.length) return "";
-
-    const maxBalance = Math.max(...results.yearlyData.map((d) => d.balance));
-    const height = 200;
-    const width = 500;
-    const padding = 40;
-
-    const points = results.yearlyData.map((data, index) => {
-      const x = padding + index * ((width - padding * 2) / (results.yearlyData.length - 1 || 1));
-      const y = height - padding - (data.balance / maxBalance) * (height - padding * 2);
-      return `${x},${y}`;
-    });
-
-    // Añadir puntos para cerrar el área
-    const lastX =
-      padding + (results.yearlyData.length - 1) * ((width - padding * 2) / (results.yearlyData.length - 1 || 1));
-    points.push(`${lastX},${height - padding}`);
-    points.push(`${padding},${height - padding}`);
-
-    return points.join(" ");
-  };
-
-  // Generar puntos para la línea de contribuciones
-  const generateContributionsPoints = () => {
-    if (!results.yearlyData.length) return "";
-
-    const maxBalance = Math.max(...results.yearlyData.map((d) => d.balance));
-    const height = 200;
-    const width = 500;
-    const padding = 40;
-
-    const points = results.yearlyData.map((data, index) => {
-      const x = padding + index * ((width - padding * 2) / (results.yearlyData.length - 1 || 1));
-      const y = height - padding - (data.contributions / maxBalance) * (height - padding * 2);
-      return `${x},${y}`;
-    });
-
-    return points.join(" ");
-  };
+  // Calcula el rendimiento total
+  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
+  const currentValue = investments.reduce((sum, inv) => sum + (inv.currentValue || inv.amount), 0);
+  const totalReturn = ((currentValue - totalInvested) / totalInvested * 100) || 0;
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container>
-        <Title>Simulador de Inversiones</Title>
-  
-        <Grid>
-          {/* Panel de control */}
-          <Card>
-            <SectionTitle>
-              <IconWrapper>
-                <DollarSign size={20} />
-              </IconWrapper>
-              Parámetros
-            </SectionTitle>
-  
-            <div>
-              {/* Botón de reinicio */}
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setInitialAmount(10000);
-                  setMonthlyContribution(1000);
-                  setInterestRate(8);
-                  setYears(10);
-                  setInvestmentType("moderate");
-                }}
-              >
-                <RefreshCw size={16} />
-                Reiniciar Simulación
-              </Button>
-            </div>
-          </Card>
-  
-          {/* Resultados y gráfico */}
-          <div>
-            {/* Tarjeta de resultados */}
-            <Card style={{ marginBottom: "1.5rem" }}>
-              <SectionTitle>
-                <IconWrapper>
-                  <TrendingUp size={20} />
-                </IconWrapper>
-                Resultados de la Inversión
-              </SectionTitle>
-  
-              <ResultsGrid>
-                <ResultCard variant="primary">
-                  <ResultLabel>Balance Final</ResultLabel>
-                  <ResultValue variant="primary">
-                    {formatCurrency(results.finalBalance)}
-                  </ResultValue>
-                </ResultCard>
-  
-                <ResultCard>
-                  <ResultLabel>Total Aportado</ResultLabel>
-                  <ResultValue>
-                    {formatCurrency(results.totalContributions)}
-                  </ResultValue>
-                </ResultCard>
-  
-                <ResultCard variant="green">
-                  <ResultLabel>Interés Generado</ResultLabel>
-                  <ResultValue variant="green">
-                    {formatCurrency(results.totalInterest)}
-                  </ResultValue>
-                </ResultCard>
-              </ResultsGrid>
-            </Card>
-  
-            {/* Tabla de resultados */}
-            <Card style={{ marginBottom: "1.5rem" }}>
-              <TableHeader>
-                <SectionTitle style={{ margin: 0 }}>
-                  <IconWrapper>
-                    <Calendar size={20} />
-                  </IconWrapper>
-                  Proyección Anual
-                </SectionTitle>
-                <Button 
-                  variant="ghost" 
-                  style={{ 
-                    width: "auto", 
-                    color: theme.primary,
-                    backgroundColor: "transparent",
-                    border: "none"
-                  }}
-                >
-                  <Download size={16} style={{ marginRight: "0.25rem" }} />
-                  Exportar
-                </Button>
-              </TableHeader>
-  
-              <div style={{ overflowX: "auto" }}>
-                <Table>
-                  <thead>
-                    <tr>
-                      <Th>Año</Th>
-                      <Th>Balance</Th>
-                      <Th>Aportaciones</Th>
-                      <Th>Interés</Th>
-                      <Th>Rendimiento</Th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.yearlyData.map((data, index) => (
-                      <tr key={index}>
-                        <Td isEven={index % 2 === 0}>{data.year}</Td>
-                        <Td isEven={index % 2 === 0}>{formatCurrency(data.balance)}</Td>
-                        <Td isEven={index % 2 === 0}>{formatCurrency(data.contributions)}</Td>
-                        <Td isEven={index % 2 === 0} color={theme.greenText}>{formatCurrency(data.interest)}</Td>
-                        <Td isEven={index % 2 === 0} color={theme.primary}>
-                          {formatCurrency(data.returns)}
-                        </Td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            </Card>
+    <InversionesContainer>
+      <Header>
+        <Title>
+          <TrendingUp size={24} />
+          <h2>Mis Inversiones</h2>
+        </Title>
+        <button 
+          className="btn-add"
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          <Plus size={18} />
+          Nueva Inversión
+        </button>
+      </Header>
+
+      {/* Pestañas */}
+      <Tabs>
+        <Tab 
+          active={activeTab === 'mis-inversiones'}
+          onClick={() => setActiveTab('mis-inversiones')}
+        >
+          Mis Inversiones
+        </Tab>
+        <Tab 
+          active={activeTab === 'rendimiento'}
+          onClick={() => setActiveTab('rendimiento')}
+        >
+          Rendimiento
+        </Tab>
+        <Tab 
+          active={activeTab === 'analisis'}
+          onClick={() => setActiveTab('analisis')}
+        >
+          Análisis
+        </Tab>
+      </Tabs>
+
+      {/* Resumen */}
+      <SummaryCards>
+        <SummaryCard>
+          <div className="icon">
+            <DollarSign size={20} />
           </div>
-        </Grid>
-        <GraficaInversion /> 
-      </Container>
-    </ThemeProvider>
+          <div>
+            <h4>Total Invertido</h4>
+            <p>${totalInvested.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
+          </div>
+        </SummaryCard>
+        <SummaryCard>
+          <div className="icon">
+            <PieChart size={20} />
+          </div>
+          <div>
+            <h4>Valor Actual</h4>
+            <p>${currentValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
+          </div>
+        </SummaryCard>
+        <SummaryCard>
+          <div className="icon">
+            <ArrowUpRight size={20} />
+          </div>
+          <div>
+            <h4>Rendimiento</h4>
+            <p className={totalReturn >= 0 ? 'positive' : 'negative'}>
+              {totalReturn.toFixed(2)}%
+            </p>
+          </div>
+        </SummaryCard>
+      </SummaryCards>
+
+      {/* Formulario para agregar inversión */}
+      {showAddForm && (
+        <AddInvestmentForm onSubmit={handleAddInvestment}>
+          <h4>Agregar Nueva Inversión</h4>
+          <FormRow>
+            <FormGroup>
+              <label>Nombre</label>
+              <input
+                type="text"
+                name="name"
+                value={newInvestment.name}
+                onChange={handleInputChange}
+                required
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Tipo</label>
+              <select
+                name="type"
+                value={newInvestment.type}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="acciones">Acciones</option>
+                <option value="fondos">Fondos de inversión</option>
+                <option value="bienes-raices">Bienes Raíces</option>
+                <option value="cripto">Criptomonedas</option>
+                <option value="otros">Otros</option>
+              </select>
+            </FormGroup>
+          </FormRow>
+          
+          <FormRow>
+            <FormGroup>
+              <label>Monto Inicial (MXN)</label>
+              <input
+                type="number"
+                name="amount"
+                value={newInvestment.amount}
+                onChange={handleInputChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Tasa de Retorno Esperada (%)</label>
+              <input
+                type="number"
+                name="returnRate"
+                value={newInvestment.returnRate}
+                onChange={handleInputChange}
+                step="0.1"
+                required
+              />
+            </FormGroup>
+          </FormRow>
+          
+          <FormRow>
+            <FormGroup>
+              <label>Fecha de Inversión</label>
+              <input
+                type="date"
+                name="date"
+                value={newInvestment.date}
+                onChange={handleInputChange}
+                required
+              />
+            </FormGroup>
+            <FormGroup>
+              <label>Broker/Plataforma</label>
+              <input
+                type="text"
+                name="broker"
+                value={newInvestment.broker}
+                onChange={handleInputChange}
+              />
+            </FormGroup>
+          </FormRow>
+          
+          <FormGroup>
+            <label>Notas</label>
+            <textarea
+              name="notes"
+              value={newInvestment.notes}
+              onChange={handleInputChange}
+              rows="3"
+            />
+          </FormGroup>
+          
+          <FormActions>
+            <button type="button" onClick={() => setShowAddForm(false)}>
+              Cancelar
+            </button>
+            <button type="submit" className="primary">
+              Agregar Inversión
+            </button>
+          </FormActions>
+        </AddInvestmentForm>
+      )}
+
+      {/* Contenido de las pestañas */}
+      {activeTab === 'mis-inversiones' && (
+        <InvestmentsList>
+          {investments.length === 0 ? (
+            <EmptyState>
+              <Info size={48} />
+              <p>No tienes inversiones registradas</p>
+              <button onClick={() => setShowAddForm(true)}>
+                Agregar primera inversión
+              </button>
+            </EmptyState>
+          ) : (
+            investments.map(investment => (
+              <InvestmentItem key={investment.id}>
+                <InvestmentHeader onClick={() => toggleExpandInvestment(investment.id)}>
+                  <div className="info">
+                    <h4>{investment.name}</h4>
+                    <span className={`type ${investment.type}`}>
+                      {investment.type === 'acciones' && 'Acciones'}
+                      {investment.type === 'fondos' && 'Fondos'}
+                      {investment.type === 'bienes-raices' && 'Bienes Raíces'}
+                      {investment.type === 'cripto' && 'Cripto'}
+                      {investment.type === 'otros' && 'Otros'}
+                    </span>
+                  </div>
+                  <div className="amount">
+                    <span className="current">
+                      ${investment.currentValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </span>
+                    <span className={`return ${investment.returnRate >= 0 ? 'positive' : 'negative'}`}>
+                      {investment.returnRate >= 0 ? '+' : ''}{investment.returnRate}%
+                    </span>
+                    {expandedInvestment === investment.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </div>
+                </InvestmentHeader>
+                
+                {expandedInvestment === investment.id && (
+                  <InvestmentDetails>
+                    <DetailRow>
+                      <div>
+                        <label>Monto Inicial</label>
+                        <p>${investment.amount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
+                      </div>
+                      <div>
+                        <label>Fecha de Inversión</label>
+                        <p>{new Date(investment.date).toLocaleDateString('es-MX')}</p>
+                      </div>
+                      <div>
+                        <label>Broker/Plataforma</label>
+                        <p>{investment.broker || 'No especificado'}</p>
+                      </div>
+                    </DetailRow>
+                    
+                    {investment.notes && (
+                      <DetailRow>
+                        <div className="full-width">
+                          <label>Notas</label>
+                          <p>{investment.notes}</p>
+                        </div>
+                      </DetailRow>
+                    )}
+                    
+                    <DetailActions>
+                      <button className="edit">
+                        <Edit size={16} />
+                        Editar
+                      </button>
+                      <button 
+                        className="delete"
+                        onClick={() => handleDeleteInvestment(investment.id)}
+                      >
+                        <Trash2 size={16} />
+                        Eliminar
+                      </button>
+                    </DetailActions>
+                  </InvestmentDetails>
+                )}
+              </InvestmentItem>
+            ))
+          )}
+        </InvestmentsList>
+      )}
+
+      {activeTab === 'rendimiento' && (
+        <PerformanceSection>
+          <PerformanceChart>
+            <h4>Rendimiento Mensual</h4>
+            <ChartContainer>
+              {performanceData.map((item, index) => (
+                <ChartBar key={index} height={Math.abs(item.return) * 10}>
+                  <div className={`bar ${item.return >= 0 ? 'positive' : 'negative'}`} />
+                  <span>{item.month}</span>
+                  <span className="return-value">
+                    {item.return >= 0 ? '+' : ''}{item.return}%
+                  </span>
+                </ChartBar>
+              ))}
+            </ChartContainer>
+          </PerformanceChart>
+          
+          <AllocationChart>
+            <h4>Distribución de Inversiones</h4>
+            <PieChartContainer>
+              {investments.length > 0 ? (
+                <>
+                  <PieChart>
+                    {investments.map((inv, i) => {
+                      const percentage = (inv.amount / totalInvested) * 100;
+                      const color = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'][i % 5];
+                      return (
+                        <PieSlice 
+                          key={i}
+                          percentage={percentage}
+                          color={color}
+                          startAngle={i === 0 ? 0 : investments.slice(0, i).reduce((sum, inv) => {
+                            return sum + (inv.amount / totalInvested) * 360;
+                          }, 0)}
+                        />
+                      );
+                    })}
+                  </PieChart>
+                  <Legend>
+                    {investments.map((inv, i) => {
+                      const color = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'][i % 5];
+                      return (
+                        <LegendItem key={i}>
+                          <div className="color-box" style={{ backgroundColor: color }} />
+                          <span>{inv.name}</span>
+                          <span className="percentage">
+                            {((inv.amount / totalInvested) * 100).toFixed(1)}%
+                          </span>
+                        </LegendItem>
+                      );
+                    })}
+                  </Legend>
+                </>
+              ) : (
+                <p>No hay datos para mostrar</p>
+              )}
+            </PieChartContainer>
+          </AllocationChart>
+        </PerformanceSection>
+      )}
+
+      {activeTab === 'analisis' && (
+        <AnalysisSection>
+          <div className="analysis-card">
+            <h4>Diversificación</h4>
+            <p>Evalúa cómo están distribuidas tus inversiones entre diferentes tipos de activos.</p>
+            <ul>
+              <li>Acciones: 60%</li>
+              <li>Bienes Raíces: 30%</li>
+              <li>Otros: 10%</li>
+            </ul>
+          </div>
+          
+          <div className="analysis-card">
+            <h4>Riesgo vs. Retorno</h4>
+            <p>Tus inversiones tienen un perfil de riesgo moderado con retornos esperados del 8-12% anual.</p>
+          </div>
+          
+          <div className="analysis-card">
+            <h4>Recomendaciones</h4>
+            <p>Considera diversificar más en bonos para reducir el riesgo.</p>
+            <p>Revisa periódicamente el rendimiento de tus fondos de inversión.</p>
+          </div>
+        </AnalysisSection>
+      )}
+    </InversionesContainer>
   );
-}
-
-  export default InversionesView;
-
-  // Definición de temas
-const lightTheme = {
-  primary: "#D9632A",
-  primaryLight: "#F78839",
-  background: "white",
-  backgroundSecondary: "#f8f9fa",
-  backgroundTertiary: "#f3f4f6",
-  text: "#1f2937",
-  textSecondary: "#6B7280",
-  textTertiary: "#9CA3AF",
-  border: "#E5E7EB",
-  green: "#4CAF50",
-  greenLight: "#e6f5e6",
-  greenText: "#2E7D32",
-  blue: "#2196F3",
-  blueLight: "#e6f3fa",
-  blueText: "#0d47a1",
-  red: "#E53935",
-  cardShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-  isDark: false
 };
 
-const darkTheme = {
-  primary: "#F78839",
-  primaryLight: "#D9632A",
-  background: "#1f2937",
-  backgroundSecondary: "#374151",
-  backgroundTertiary: "#4b5563",
-  text: "#f9fafb",
-  textSecondary: "#e5e7eb",
-  textTertiary: "#d1d5db",
-  border: "#4b5563",
-  green: "#4CAF50",
-  greenLight: "rgba(76, 175, 80, 0.2)",
-  greenText: "#81c784",
-  blue: "#2196F3",
-  blueLight: "rgba(33, 150, 243, 0.2)",
-  blueText: "#90caf9",
-  red: "#E53935",
-  cardShadow: "0 1px 3px rgba(0, 0, 0, 0.3)",
-  isDark: true
-};
-
-// Componentes estilizados
-const Container = styled.div`
-  padding: 1rem 1.5rem;
+// Estilos
+const InversionesContainer = styled.div`
+  padding: 20px;
   width: 100%;
   margin: 0 auto;
+`;
 
-  @media (min-width: 768px) {
-    padding: 1.5rem;
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .btn-add {
+    background: #D9632A;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #F78839;
+    }
   }
 `;
 
-const Title = styled.h2`
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: ${props => props.theme.primary};
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  
-
-  @media (min-width: 1024px) {
-    grid-template-columns: 1fr 2fr;
-  }
-`;
-
-const Card = styled.div`
-  background-color: ${props => props.theme.background};
-  border-radius: 1.5rem;
-  overflow: hidden;
-  box-shadow: ${props => props.theme.cardShadow};
-  padding: 1.5rem;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+const Title = styled.div`
   display: flex;
   align-items: center;
-  color: ${props => props.theme.text};
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #1F2937;
+  }
+
+  svg {
+    color: #D9632A;
+  }
 `;
 
-const IconWrapper = styled.div`
-  margin-right: 0.5rem;
-  color: ${props => props.theme.primary};
+const Tabs = styled.div`
+  display: flex;
+  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 20px;
+`;
+
+const Tab = styled.button`
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid ${props => props.active ? '#D9632A' : 'transparent'};
+  color: ${props => props.active ? '#1F2937' : '#6B7280'};
+  font-weight: ${props => props.active ? '600' : '500'};
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #1F2937;
+  }
+`;
+
+const SummaryCards = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+`;
+
+const SummaryCard = styled.div`
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .icon {
+    background: #F3F4F6;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      color: #6B7280;
+    }
+  }
+
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+
+    &.positive {
+      color: #10B981;
+    }
+
+    &.negative {
+      color: #EF4444;
+    }
+  }
+`;
+
+const AddInvestmentForm = styled.form`
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1F2937;
+  }
+`;
+
+const FormRow = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
+  flex: 1;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #D9632A;
+      box-shadow: 0 0 0 2px rgba(217, 99, 42, 0.2);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
 `;
 
-const FormGroupHeader = styled.div`
+const FormActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+
+  button {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:first-child {
+      background: none;
+      border: 1px solid #E5E7EB;
+      color: #6B7280;
+
+      &:hover {
+        background: #F3F4F6;
+      }
+    }
+
+    &.primary {
+      background: #D9632A;
+      color: white;
+      border: none;
+
+      &:hover {
+        background: #F78839;
+      }
+    }
+  }
+`;
+
+const InvestmentsList = styled.div`
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+`;
+
+const InvestmentItem = styled.div`
+  border-bottom: 1px solid #F3F4F6;
+  padding: 16px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const InvestmentHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-`;
-
-const Label = styled.label`
-  color: ${props => props.theme.textSecondary};
-  display: block;
-  margin-bottom: 0.5rem;
-`;
-
-const ValueLabel = styled.span`
-  color: ${props => props.theme.primary};
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 3rem;
-  background-color: ${props => props.theme.backgroundTertiary};
-  border: none;
-  border-bottom: 1px solid ${props => props.theme.border};
-  border-radius: 0.75rem;
-  padding: 0 1rem;
-  color: ${props => props.theme.text};
-  outline: none;
-
-  &:focus {
-    border-bottom-color: ${props => props.theme.primary};
-    box-shadow: 0 0 0 1px ${props => props.theme.primary};
-  }
-`;
-
-const SliderContainer = styled.div`
-  margin-top: 0.5rem;
-  width: 100%;
-`;
-
-const Slider = styled.input.attrs({ type: 'range' })`
-  width: 100%;
-  height: 5px;
-  background: ${props => `linear-gradient(
-    to right,
-    ${props.theme.primary} 0%,
-    ${props.theme.primary} ${props.value / props.max * 100}%,
-    ${props.theme.backgroundTertiary} ${props.value / props.max * 100}%,
-    ${props.theme.backgroundTertiary} 100%
-  )`};
-  border-radius: 5px;
-  outline: none;
-  -webkit-appearance: none;
-
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: ${props => props.theme.primary};
-    cursor: pointer;
-  }
-
-  &::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: ${props => props.theme.primary};
-    cursor: pointer;
-  }
-`;
-
-const TabsContainer = styled.div`
-  width: 100%;
-  background-color: ${props => props.theme.backgroundTertiary};
-  border-radius: 0.5rem;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-`;
-
-const TabButton = styled.button`
-  padding: 0.5rem 1rem;
-  background-color: ${props => props.active ? props.theme.primary : 'transparent'};
-  color: ${props => props.active ? 'white' : props.theme.text};
-  border: none;
+  align-items: center;
   cursor: pointer;
-  font-weight: ${props => props.active ? '600' : '400'};
-  transition: all 0.2s ease;
 
-  &:hover {
-    background-color: ${props => props.active ? props.theme.primary : props.theme.backgroundSecondary};
+  .info {
+    h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #1F2937;
+    }
+
+    .type {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #F3F4F6;
+      color: #6B7280;
+
+      &.acciones {
+        background: #DBEAFE;
+        color: #1E40AF;
+      }
+
+      &.fondos {
+        background: #D1FAE5;
+        color: #065F46;
+      }
+
+      &.bienes-raices {
+        background: #FCE7F3;
+        color: #9D174D;
+      }
+
+      &.cripto {
+        background: #EFF6FF;
+        color: #1E40AF;
+      }
+
+      &.otros {
+        background: #ECFDF5;
+        color: #047857;
+      }
+    }
+  }
+
+  .amount {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .current {
+      font-weight: 600;
+      color: #1F2937;
+    }
+
+    .return {
+      font-weight: 500;
+      font-size: 14px;
+
+      &.positive {
+        color: #10B981;
+      }
+
+      &.negative {
+        color: #EF4444;
+      }
+    }
+
+    svg {
+      color: #9CA3AF;
+    }
   }
 `;
 
-const Select = styled.select`
-  width: 100%;
-  height: 3rem;
-  background-color: ${props => props.theme.backgroundTertiary};
-  border: none;
-  border-bottom: 1px solid ${props => props.theme.border};
-  border-radius: 0.75rem;
-  padding: 0 1rem;
-  color: ${props => props.theme.text};
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-
-  &:focus {
-    border-bottom-color: ${props => props.theme.primary};
-    box-shadow: 0 0 0 1px ${props => props.theme.primary};
-  }
+const InvestmentDetails = styled.div`
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #E5E7EB;
 `;
 
-const Option = styled.option`
-  padding: 0.5rem;
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 0.75rem 1rem;
+const DetailRow = styled.div`
   display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+
+  &.full-width {
+    flex-direction: column;
+  }
+
+  div {
+    flex: 1;
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #1F2937;
+    }
+  }
+`;
+
+const DetailActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.edit {
+      background: none;
+      border: 1px solid #E5E7EB;
+      color: #6B7280;
+
+      &:hover {
+        background: #F3F4F6;
+      }
+    }
+
+    &.delete {
+      background: none;
+      border: 1px solid #FEE2E2;
+      color: #EF4444;
+
+      &:hover {
+        background: #FEE2E2;
+      }
+    }
+  }
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  background-color: ${props => props.variant === 'outline' ? 'transparent' : props.theme.primary};
-  color: ${props => props.variant === 'outline' ? props.theme.primary : 'white'};
-  border: ${props => props.variant === 'outline' ? `1px solid ${props.theme.border}` : 'none'};
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 40px 20px;
+  text-align: center;
 
-  &:hover {
-    background-color: ${props => props.variant === 'outline' ? props.theme.backgroundTertiary : props.theme.primaryLight};
+  svg {
+    color: #9CA3AF;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: #6B7280;
+    margin-bottom: 20px;
+  }
+
+  button {
+    background: #D9632A;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #F78839;
+    }
   }
 `;
 
-const ResultsGrid = styled.div`
+const PerformanceSection = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
 
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-const ResultCard = styled.div`
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background-color: ${props => {
-    if (props.variant === 'primary') return `${props.theme.primary}10`;
-    if (props.variant === 'green') return `${props.theme.greenLight}`;
-    return props.theme.backgroundTertiary;
-  }};
-`;
+const PerformanceChart = styled.div`
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 
-const ResultLabel = styled.p`
-  font-size: 0.875rem;
-  color: ${props => props.theme.textSecondary};
-  margin-bottom: 0.25rem;
-`;
-
-const ResultValue = styled.p`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${props => {
-    if (props.variant === 'primary') return props.theme.primary;
-    if (props.variant === 'green') return props.theme.greenText;
-    return props.theme.text;
-  }};
+  h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1F2937;
+  }
 `;
 
 const ChartContainer = styled.div`
-  position: relative;
-  height: 250px;
-  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  height: 200px;
+  gap: 12px;
+  padding-top: 20px;
 `;
 
-const TableHeader = styled.div`
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid ${props => props.theme.border};
+const ChartBar = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  flex: 1;
+  height: 100%;
+
+  .bar {
+    width: 30px;
+    height: ${props => props.height}px;
+    background: #10B981;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 8px;
+
+    &.negative {
+      background: #EF4444;
+    }
+  }
+
+  span {
+    font-size: 12px;
+    color: #6B7280;
+
+    &.return-value {
+      font-weight: 500;
+      margin-top: 4px;
+      color: #1F2937;
+    }
+  }
 `;
 
-const Table = styled.table`
-  width: 100%;
+const AllocationChart = styled.div`
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1F2937;
+  }
 `;
 
-const Th = styled.th`
-  padding: 0.75rem 1.5rem;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: ${props => props.theme.textSecondary};
-  background-color: ${props => props.theme.backgroundTertiary};
-`;
-
-const Td = styled.td`
-  padding: 1rem 1.5rem;
-  white-space: nowrap;
-  font-size: 0.875rem;
-  color: ${props => props.color ? props.color : props.theme.text};
-  background-color: ${props => props.isEven ? props.theme.backgroundTertiary : 'transparent'};
-`;
-
-const AlertBox = styled.div`
-  background-color: ${props => props.theme.blueLight};
-  border-radius: 0.75rem;
-  padding: 1rem;
+// Versión corregida del gráfico de pastel
+const PieChartContainer = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  min-height: 200px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
-const AlertText = styled.p`
-  font-size: 0.875rem;
-  color: ${props => props.theme.blueText};
+const PieChartWrapper = styled.div`
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  position: relative;
+  background: #F3F4F6;
 `;
+
+const PieSlice = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 50% 0, ${props => {
+    const angle = props.startAngle + props.percentage * 3.6;
+    const x = 50 + 50 * Math.sin(angle * Math.PI / 180);
+    const y = 50 - 50 * Math.cos(angle * Math.PI / 180);
+    return `${x}% ${y}%`;
+  }});
+  background: ${props => props.color};
+  transform: rotate(${props => props.startAngle}deg);
+`;
+
+const Legend = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+
+  span {
+    font-size: 14px;
+    color: #6B7280;
+
+    &:first-of-type {
+      min-width: 120px;
+    }
+
+    &.percentage {
+      font-weight: 500;
+      color: #1F2937;
+    }
+  }
+`;
+
+const AnalysisSection = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+
+  .analysis-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      color: #1F2937;
+    }
+
+    p {
+      color: #6B7280;
+      margin-bottom: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 0;
+      color: #6B7280;
+      font-size: 14px;
+    }
+  }
+`;
+
+export default InversionesView;
