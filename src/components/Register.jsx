@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import api from './axios';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [nacionalidad, setNacionalidad] = useState('');
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post('/api/register', {
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+        nacionalidad,
+      });
+      const authToken = data.token;
+      localStorage.setItem('auth_token', authToken);
+      // aquí podrías redirigir o continuar el flujo
+      
+      window.location.href = '/';
+
+    } catch (err) {
+      console.error(err);
+      // manejar errores según err.response.data
+    }
+  };
+
   return (
     <RegisterContainer>
       <Card>
@@ -10,22 +39,47 @@ function Register() {
           <LogoImage src="src/assets/MainLogo.png" alt="logo" />
         </LogoContainer>
         <Title>Registrarse</Title>
-        
-        <form>
-          <Input type="text" placeholder="Usuario" required />
-          <Input type="email" placeholder="Correo Electrónico" required />
-          <Input type="password" placeholder="Contraseña" required />
-
-          <Select required>
+        <form onSubmit={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Usuario"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
+          <Input
+            type="email"
+            placeholder="Correo Electrónico"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Confirmar Contraseña"
+            value={passwordConfirmation}
+            onChange={e => setPasswordConfirmation(e.target.value)}
+            required
+          />
+          <Select
+            value={nacionalidad}
+            onChange={e => setNacionalidad(e.target.value)}
+            required
+          >
             <option value="">Selecciona tu nacionalidad</option>
             <option value="mexico">México</option>
             <option value="usa">Estados Unidos</option>
             <option value="europa">Europa</option>
           </Select>
-
           <Button type="submit">Registrarse</Button>
         </form>
-
         <LoginLink>
           ¿Ya tienes una cuenta? <Link to="/">Inicia sesión</Link>
         </LoginLink>
@@ -35,6 +89,7 @@ function Register() {
 }
 
 export default Register;
+
 
 const RegisterContainer = styled.div`
   display: flex;

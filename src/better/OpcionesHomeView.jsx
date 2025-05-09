@@ -1,42 +1,74 @@
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   BellIcon,
   LockIcon,
   UserIcon,
   DollarSignIcon,
-  TagIcon,
-  FileDownIcon,
-  HelpCircleIcon,
   ChevronRightIcon,
   LogOutIcon,
   MoonIcon,
   SunIcon,
 } from "lucide-react";
-import { useState } from "react";
+import api from "../components/axios"; // tu instancia de axios con baseURL
 
 export default function OpcionesHomeView({ changeComponent }) {
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [notificaciones, setNotificaciones] = useState(true);
   const [recordatorios, setRecordatorios] = useState(false);
   const [biometrico, setBiometrico] = useState(true);
   const [isDark, setIsDark] = useState(false);
-
-  const toggleTheme = () => setIsDark(!isDark);
+  const navigate = useNavigate();
 
   // Llama a la función changeComponent pasando el nombre del componente al que quieres cambiar
   const handleClick = () => {
     changeComponent("perfil");
   };
 
+  // 1) Cargar perfil del usuario
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserName(data.data.name);
+        setUserEmail(data.data.email);
+      } catch (err) {
+        console.error("Error cargando perfil:", err);
+      }
+    })();
+  }, []);
+
+  // 2) Logout
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      await api.post("/api/logout", {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      localStorage.removeItem("auth_token");
+      navigate("/");
+    } catch (err) {
+      console.error("Error cerrando sesión:", err);
+    }
+  };
+
+  const toggleTheme = () => setIsDark(!isDark);
+
   return (
     <Container>
       <Header>Configuraciones</Header>
+
       <Card>
         <CardHeader>
           <UserIcon className="icon" />
           <div>
-            <h3>Jai Ortiz</h3>
-            <p>jaielivan.oc04@gmail.com</p>
+            <h3>{userName || "Usuario"}</h3>
+            <p>{userEmail || "correo@ejemplo.com"}</p>
           </div>
           <ChevronRightIcon className="icon-option-home" onClick={handleClick}/>
         </CardHeader>
@@ -87,11 +119,9 @@ export default function OpcionesHomeView({ changeComponent }) {
         </CardBody>
       </Card>
 
-        <Link to="/" style={{ textDecoration: 'none' }}>
-            <LogoutButton>
-                <LogOutIcon className="icon" /> Cerrar Sesión
-            </LogoutButton>
-        </Link>
+      <LogoutButton onClick={handleLogout}>
+        <LogOutIcon className="icon" /> Cerrar Sesión
+      </LogoutButton>
     </Container>
   );
 }

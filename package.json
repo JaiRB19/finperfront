@@ -12,6 +12,7 @@
   "dependencies": {
     "@paybook/sync-widget": "^4.21.0",
     "@syncfy/authentication-widget": "^0.0.19",
+    "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "lucide-react": "^0.482.0",

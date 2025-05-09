@@ -1,7 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
+import api from './axios';
 import styled from 'styled-components';
 
 function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      // 1) Loguear en Laravel usando la instancia `api`
+      const { data: loginData } = await api.post('/api/login', { email, password });
+      const authToken = loginData.token;
+      localStorage.setItem('auth_token', authToken);
+
+      // 2) Iniciar sesión en Syncfy
+      const { data: syncfyData } = await api.post(
+        '/api/syncfy/start',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      localStorage.setItem('syncfy_rid', syncfyData.rid);
+      localStorage.setItem('syncfy_session_token', syncfyData.response.token);
+
+      window.location.href = '/home';
+
+      // aquí puedes redirigir o actualizar estado
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <LoginContainer>
       <Card>
@@ -9,14 +43,23 @@ function Login() {
           <LogoImage src="src/assets/MainLogo.png" alt="logo" />
         </LogoContainer>
         <Title>Iniciar Sesión</Title>
-        
-        <form>
-          <Input type="email" placeholder="Correo Electrónico" required />
-          <Input type="password" placeholder="Contraseña" required />
-
+        <form onSubmit={handleSubmit}>
+          <Input
+            type="email"
+            placeholder="Correo Electrónico"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
           <Button type="submit">Iniciar Sesión</Button>
         </form>
-
         <Link href="/register">Crear Nueva Cuenta</Link>
       </Card>
     </LoginContainer>

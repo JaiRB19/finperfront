@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate  } from 'react-router-dom';
 import styled from 'styled-components';
 import { User, Bell, Settings, X, LogOut, UserCircle } from 'lucide-react';
+import api from '../components/axios';  // tu instancia de axios con baseURL
 
 const HomeHeader = ({ changeComponent }) => {
-  const userName = "Usuario";
+  const [userName, setUserName] = useState('');            // ← ahora dinámico
   const [notifications, setNotifications] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -19,38 +20,63 @@ const HomeHeader = ({ changeComponent }) => {
     month: 'long'
   });
 
-  // Manejar clics fuera del menú de usuario
+  // 1) Cargar perfil
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const { data } = await api.get('/api/profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        // Asumimos que tu respuesta es { data: { name: "...", ... } }
+        setUserName(data.data.name);
+      } catch (err) {
+        console.error('Error cargando perfil:', err);
+      }
+    })();
+  }, []);
+
+  // cargar número de notificaciones
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const token = localStorage.getItem('auth_token');
+  //       const { data } = await api.get('/api/notifications/count', {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       });
+  //       setNotifications(data.count);
+  //     } catch (err) {
+  //       console.error('Error cargando notificaciones:', err);
+  //     }
+  //   })();
+  // }, []);
+
+  // Cerrar menú si clicas fuera
   useEffect(() => {
     function handleClickOutside(event) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target) && 
-          userIconRef.current && !userIconRef.current.contains(event.target)) {
+      if (
+        userMenuRef.current && 
+        !userMenuRef.current.contains(event.target) && 
+        userIconRef.current && 
+        !userIconRef.current.contains(event.target)
+      ) {
         setShowUserMenu(false);
       }
     }
-    
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleClearNotifications = () => setNotifications(0);
-  
   const handleViewProfile = () => {
     setShowUserMenu(false);
-    changeComponent("perfil");
-    // Aquí puedes navegar a la página de perfil
+    changeComponent('perfil');
   };
-  
   const handleLogout = () => {
     setShowUserMenu(false);
     navigate('/');
-    // Aquí puedes implementar la lógica de cierre de sesión
   };
-
-  const toggleUserMenu = () => {
-    setShowUserMenu(!showUserMenu);
-  };
+  const toggleUserMenu = () => setShowUserMenu(!showUserMenu);
 
   return (
     <HeaderContainer>
@@ -59,11 +85,10 @@ const HomeHeader = ({ changeComponent }) => {
           <User color="#E67E22" size={24} />
         </UserIconWrapper>
         <div>
-          <WelcomeText>¡Bienvenido, {userName}!</WelcomeText>
+          <WelcomeText>¡Bienvenido, {userName || 'Usuario'}!</WelcomeText>
           <DateText>{currentDate}</DateText>
         </div>
         
-        {/* Menú de usuario */}
         <UserMenu ref={userMenuRef} show={showUserMenu}>
           <UserMenuItem onClick={handleViewProfile}>
             <UserCircle size={18} color="#E67E22" />
@@ -93,26 +118,23 @@ const HomeHeader = ({ changeComponent }) => {
           <CloseButton onClick={() => setShowNotifications(false)}><X size={20} /></CloseButton>
         </PanelHeader>
         <p>Tienes {notifications} nuevas notificaciones.</p>
-        <button onClick={() => {handleClearNotifications(); setShowNotifications(false);}}
-        className="btn btn-light rounded-pill py-2 px-4"
-        style={{
-          backgroundColor: '#f0f0f0',
-          color: '#e86833',
-          border: '1px solid #c8c7cc',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          fontSize: '17px',
-          fontWeight: '500',
-          WebkitTapHighlightColor: 'transparent',
-          transition: 'background-color 0.2s ease-in-out',
-        }}
-        onMouseOver={(e) => {
-          e.target.style.backgroundColor = '#e0e0e0';
-        }}
-        onMouseOut={(e) => {
-          e.target.style.backgroundColor = '#f0f0f0';
-        }}
-      >
-        Marcar como leído
+        <button
+          onClick={() => { handleClearNotifications(); setShowNotifications(false); }}
+          className="btn btn-light rounded-pill py-2 px-4"
+          style={{
+            backgroundColor: '#f0f0f0',
+            color: '#e86833',
+            border: '1px solid #c8c7cc',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            fontSize: '17px',
+            fontWeight: '500',
+            WebkitTapHighlightColor: 'transparent',
+            transition: 'background-color 0.2s ease-in-out',
+          }}
+          onMouseOver={e => e.target.style.backgroundColor = '#e0e0e0'}
+          onMouseOut={e => e.target.style.backgroundColor = '#f0f0f0'}
+        >
+          Marcar como leído
         </button>
       </SidePanel>
 
@@ -128,6 +150,7 @@ const HomeHeader = ({ changeComponent }) => {
 };
 
 export default HomeHeader;
+
 
 // Contenedor principal del header
 const HeaderContainer = styled.header`

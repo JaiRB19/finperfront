@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { PieChart, BarChart2 } from "lucide-react";
+import api from "../components/axios";
 import UltimosMovimientosView from "./UltimosMovimientos";
 
 const GeneralCardView = () => {
+  const [summary, setSummary] = useState({
+    balance: 0,
+    income: 0,
+    expense: 0,
+  });
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/dashboard/summary", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSummary(data.data);
+      } catch (err) {
+        console.error("Error cargando resumen:", err);
+      }
+    };
+    fetchSummary();
+  }, []);
+
   return (
     <Container>
       {/* Top Row */}
@@ -11,22 +33,29 @@ const GeneralCardView = () => {
         <Card minWidth="250px">
           <CardTitle>Saldo Disponible</CardTitle>
           <DateRange>1/01/25 - 31/01/25</DateRange>
-          <AmountDisplay>2,300 MXN</AmountDisplay>
+          <AmountDisplay>
+            {/*{summary.balance.toLocaleString()} MXN*/}
+            {Math.max(summary.balance, 0).toLocaleString()} MXN
+          </AmountDisplay>
         </Card>
-        
+
         <Card minWidth="200px">
           <CardTitle>Gastos</CardTitle>
           <DateRange>1/01/25 - 31/01/25</DateRange>
-          <AmountDisplay danger>700 MXN</AmountDisplay>
+          <AmountDisplay danger>
+            {summary.expense.toLocaleString()} MXN
+          </AmountDisplay>
         </Card>
-        
+
         <Card minWidth="200px">
           <CardTitle>Ingresos</CardTitle>
           <DateRange>1/01/25 - 31/01/25</DateRange>
-          <AmountDisplay success>3000 MXN</AmountDisplay>
+          <AmountDisplay success>
+            {summary.income.toLocaleString()} MXN
+          </AmountDisplay>
         </Card>
       </Row>
-      
+
       {/* Bottom Row */}
       <Row>
         <Card minWidth="300px" style={{ flex: 2 }}>
@@ -49,16 +78,18 @@ const GeneralCardView = () => {
             <GoalDeadline>Fecha límite: 15/08/25</GoalDeadline>
           </GoalItem>
         </Card>
-        
+
         <Card minWidth="200px" style={{ flex: 1 }}>
           <CardTitle>Visualización</CardTitle>
           <DateRange>1/01/25 - 31/01/25</DateRange>
           <ChartContainer>
-            <PieChart size={80} color={colors.primary} strokeWidth={1.5} />
+            <PieChart size={80} strokeWidth={1.5} />
           </ChartContainer>
         </Card>
       </Row>
-<br /><br />
+
+      <br /><br />
+
       <UltimosMovimientosView />
     </Container>
   );

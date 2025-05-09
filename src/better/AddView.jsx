@@ -1,32 +1,103 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Plus, X } from "lucide-react";
+import api from "../components/axios";
 
 const IngresoGastoCardView = () => {
   const [type, setType] = useState("Ingreso");
-  const [icons, setIcons] = useState(["Comida", "Mascota", "Ropa", "Casa", "Escuela"]);
+  const [icons, setIcons] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const handleAddIcon = () => {
-    if (newCategory.trim()) {
-      setIcons([...icons, newCategory]);
+  // Obtener categorías según tipo
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/categories", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const filtered = data.data
+          .filter(cat => cat.type === type)
+          .map(cat => cat.name);
+        setIcons(filtered);
+      } catch (error) {
+        console.error("Error al cargar categorías:", error);
+      }
+    };
+    fetchCategories();
+  }, [type]);
+
+  // Crear nueva categoría
+  const handleAddIcon = async () => {
+    if (!newCategory.trim()) return;
+    try {
+      const token = localStorage.getItem("auth_token");
+      const { data } = await api.post(
+        "/api/categories",
+        { name: newCategory, type },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setIcons(prev => [...prev, data.data.name]);
       setNewCategory("");
       setShowModal(false);
+    } catch (error) {
+      console.error("Error al agregar categoría:", error);
+    }
+  };
+
+  // Crear transacción
+  const handleSubmitTransaction = async () => {
+    if (!amount || !selectedCategory) {
+      return alert("Debes indicar importe y seleccionar categoría.");
+    }
+    try {
+      const token = localStorage.getItem("auth_token");
+      await api.post(
+        "/api/transactions",
+        {
+          amount: parseFloat(amount),
+          note,
+          type,
+          category_name: selectedCategory,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("Transacción registrada.");
+      setAmount("");
+      setNote("");
+      setSelectedCategory("");
+    } catch (err) {
+      console.error("Error al registrar transacción:", err);
+      alert("Ocurrió un error al registrar la transacción.");
     }
   };
 
   return (
     <Container>
       <ToggleGroup>
-        <ToggleButton active={type === "Ingreso"} onClick={() => setType("Ingreso")}>Ingreso</ToggleButton>
-        <ToggleButton active={type === "Gasto"} onClick={() => setType("Gasto")}>Gasto</ToggleButton>
+        <ToggleButton active={type === "Ingreso"} onClick={() => setType("Ingreso")}>
+          Ingreso
+        </ToggleButton>
+        <ToggleButton active={type === "Gasto"} onClick={() => setType("Gasto")}>
+          Gasto
+        </ToggleButton>
       </ToggleGroup>
 
       <IconsRow>
         {icons.map((icon, index) => (
-          <IconBox key={index}>
-            {icon && <IconText>{icon}</IconText>}
+          <IconBox
+            key={index}
+            onClick={() => setSelectedCategory(icon)}
+            style={{
+              border: selectedCategory === icon ? "2px solid #007BFF" : "1px solid #ccc",
+              cursor: "pointer",
+            }}
+          >
+            <IconText>{icon}</IconText>
           </IconBox>
         ))}
         <PlusButton onClick={() => setShowModal(true)}>
@@ -37,27 +108,45 @@ const IngresoGastoCardView = () => {
       <Divider />
 
       <FormSection>
-        <LargeIconBox />
+        {/* Aquí mostramos la categoría seleccionada */}
+        <LargeIconBox>
+          <IconText>
+            {selectedCategory || " "}
+          </IconText>
+        </LargeIconBox>
+
         <InputRow>
           <Label>Importe:</Label>
-          <Input placeholder="MXN" />
+          <Input
+            placeholder="MXN"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+          />
         </InputRow>
         <InputRow>
           <Label>Nota:</Label>
-          <Input placeholder="Nota" />
+          <Input
+            placeholder="Nota"
+            value={note}
+            onChange={e => setNote(e.target.value)}
+          />
         </InputRow>
-        <SubmitButton>Aceptar</SubmitButton>
+        <SubmitButton onClick={handleSubmitTransaction}>
+          Aceptar
+        </SubmitButton>
       </FormSection>
 
       {showModal && (
         <ModalOverlay>
           <ModalContent>
-            <CloseButton onClick={() => setShowModal(false)}><X size={18} /></CloseButton>
+            <CloseButton onClick={() => setShowModal(false)}>
+              <X size={18} />
+            </CloseButton>
             <h3>Agregar Categoría</h3>
             <ModalInput
               type="text"
               value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
+              onChange={e => setNewCategory(e.target.value)}
               placeholder="Categoría a agregar"
             />
             <ModalButton onClick={handleAddIcon}>Crear</ModalButton>
@@ -69,6 +158,9 @@ const IngresoGastoCardView = () => {
 };
 
 export default IngresoGastoCardView;
+
+
+
 
 const Container = styled.div`
   display: flex;

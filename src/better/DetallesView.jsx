@@ -1,18 +1,29 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import api from "../components/axios";
 
 export default function DetalleCardView() {
   const [selectedPeriod, setSelectedPeriod] = useState("current");
+  const [barData, setBarData] = useState([]);
+  const [summary, setSummary] = useState({ expenses: 0, income: 0 });
 
-  const barData = [
-    { date: "15 mar", percentage: 50, amount: 340, color: "#D9632A" },
-    { date: "14 mar", percentage: 50, amount: 350, color: "#FFD6A5" },
-  ];
-
-  const summary = {
-    expenses: -700,
-    income: 3000,
-  };
+  // Cargar datos al montar y cuando cambie el periodo
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/dashboard/details", {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { period: selectedPeriod }
+        });
+        setBarData(data.data.bars);
+        setSummary(data.data.summary);
+      } catch (err) {
+        console.error("Error cargando detalle:", err);
+      }
+    };
+    fetchDetails();
+  }, [selectedPeriod]);
 
   return (
     <Container>
@@ -21,21 +32,17 @@ export default function DetalleCardView() {
 
         {/* Period Selector */}
         <PeriodSelector>
-          {["nov", "dic", "ene", "feb", "last", "current"].map((period, index) => (
+          {["nov","dic","ene","feb","last","current"].map((p,i) => (
             <PeriodButton
-              key={index}
-              active={selectedPeriod === period}
-              onClick={() => setSelectedPeriod(period)}
+              key={i}
+              active={selectedPeriod === p}
+              onClick={() => setSelectedPeriod(p)}
             >
-      {period === "last"
-        ? "Mes pasado"
-        : period === "current"
-        ? "Este mes"
-        : period === "ene"
-        ? "ene 2025"
-        : period === "feb"
-        ? "feb 2025"
-        : `${period} 2024`}
+              {p==="last"? "Mes pasado"
+               :p==="current"? "Este mes"
+               :p==="ene"? "ene 2025"
+               :p==="feb"? "feb 2025"
+               : `${p} 2024`}
             </PeriodButton>
           ))}
         </PeriodSelector>
@@ -43,14 +50,18 @@ export default function DetalleCardView() {
         <Content>
           {/* Bar Chart */}
           <BarChartContainer>
-            {barData.map((item, index) => (
-              <BarRow key={index}>
+            {barData.map((item,i) => (
+              <BarRow key={i}>
                 <ColorDot color={item.color} />
                 <DateLabel>{item.date}</DateLabel>
                 <Bar>
-                  <FilledBar color={item.color} width={item.percentage} opacity={1 - index * 0.15} />
+                  <FilledBar
+                    color={item.color}
+                    width={item.percentage}
+                    opacity={1 - i * 0.15}
+                  />
                 </Bar>
-                <Amount>{item.amount} mxn</Amount>
+                <Amount>{item.amount.toLocaleString()} mxn</Amount>
                 <Percentage>{item.percentage}%</Percentage>
               </BarRow>
             ))}
@@ -60,11 +71,15 @@ export default function DetalleCardView() {
           <SummaryContainer>
             <SummaryItem>
               <SummaryTitle>Gasto Mensual</SummaryTitle>
-              <SummaryValue color="red">{summary.expenses.toLocaleString()} MXN</SummaryValue>
+              <SummaryValue color="red">
+                {summary.expenses.toLocaleString()} MXN
+              </SummaryValue>
             </SummaryItem>
             <SummaryItem>
               <SummaryTitle>Ingreso Mensual</SummaryTitle>
-              <SummaryValue color="green">+{summary.income.toLocaleString()} MXN</SummaryValue>
+              <SummaryValue color="green">
+                +{summary.income.toLocaleString()} MXN
+              </SummaryValue>
             </SummaryItem>
           </SummaryContainer>
         </Content>

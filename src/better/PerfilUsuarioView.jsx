@@ -1,55 +1,104 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../components/axios";  // tu instancia de axios con baseURL
 import styled from "styled-components";
-import { UserIcon, ArrowLeft, Camera, Mail, Phone, MapPin, Calendar, Lock, Bell, Eye, Shield, Save } from "lucide-react";
+import {
+  UserIcon,
+  ArrowLeft,
+  Camera,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Lock,
+  Bell,
+  Eye,
+  Shield,
+  Save
+} from "lucide-react";
 
-// Main Component
 const PerfilView = ({ changeComponent }) => {
-  const [theme] = useState({ isDark: false }); // Replace with your actual theme logic
+  const [theme] = useState({ isDark: false }); 
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
-    name: "Jai Ortiz",
-    email: "jaielivan.oc04@gmail.com",
-    phone: "+52 999 9527 4024",
-    address: "Merida Yucatan, México",
-    birthdate: "19/06/2004",
-    bio: "Apasionado por las finanzas personales y el ahorro inteligente.",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthdate: "",
+    bio: "",
   });
-
-  // Configuración de privacidad
   const [privacySettings, setPrivacySettings] = useState({
-    showActivity: true,
+    showActivity: false,
     showBalance: false,
-    twoFactorAuth: true,
-    emailNotifications: true,
+    twoFactorAuth: false,
+    emailNotifications: false,
   });
 
-  // Estadísticas del usuario
-  const userStats = [
-    { label: "Días activo", value: 0 },
-    { label: "Transacciones", value: 0 },
-    { label: "Presupuestos", value: 0 },
-  ];
+  // Al montar, cargar datos de perfil
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const d = data.data;
+        setUserData({
+          name: d.name || "",
+          email: d.email || "",
+          phone: d.phone || "",
+          address: d.address || "",
+          birthdate: d.birthdate || "",
+          bio: d.bio || ""
+        });
+        setPrivacySettings(d.privacy_settings || {
+          showActivity: false,
+          showBalance: false,
+          twoFactorAuth: false,
+          emailNotifications: false
+        });
+      } catch (err) {
+        console.error("Error cargando perfil:", err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleInputChange = (field, value) => {
-    setUserData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setUserData(prev => ({ ...prev, [field]: value }));
   };
 
-  const togglePrivacySetting = (setting) => {
-    setPrivacySettings((prev) => ({
-      ...prev,
-      [setting]: !prev[setting],
-    }));
+  const togglePrivacySetting = setting => {
+    setPrivacySettings(prev => ({ ...prev, [setting]: !prev[setting] }));
   };
 
-  const handleSave = () => {
-    // Aquí iría la lógica para guardar los cambios
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const payload = {
+        ...userData,
+        privacy_settings: privacySettings
+      };
+      const { data } = await api.put("/api/profile", payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // actualizar estado con la respuesta (por si backend transformó algo)
+      const d = data.data;
+      setUserData({
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        address: d.address,
+        birthdate: d.birthdate,
+        bio: d.bio
+      });
+      setPrivacySettings(d.privacy_settings);
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Error guardando perfil:", err);
+    }
   };
 
-  // Llama a la función changeComponent pasando el nombre del componente al que quieres cambiar
   const HandleChangeComponent = () => {
     changeComponent("opciones");
   };
@@ -86,7 +135,7 @@ const PerfilView = ({ changeComponent }) => {
               <UserNameInput
                 theme={theme}
                 value={userData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
+                onChange={e => handleInputChange("name", e.target.value)}
               />
             ) : (
               <UserName theme={theme}>{userData.name}</UserName>
@@ -99,8 +148,12 @@ const PerfilView = ({ changeComponent }) => {
         {/* Estadísticas del usuario */}
         <Card theme={theme}>
           <StatsGrid theme={theme}>
-            {userStats.map((stat, index) => (
-              <StatCard key={index}>
+            {[
+              { label: "Días activo", value: 0 },
+              { label: "Transacciones", value: 0 },
+              { label: "Presupuestos", value: 0 }
+            ].map((stat, idx) => (
+              <StatCard key={idx}>
                 <StatValue theme={theme}>{stat.value}</StatValue>
                 <StatLabel theme={theme}>{stat.label}</StatLabel>
               </StatCard>
@@ -113,97 +166,38 @@ const PerfilView = ({ changeComponent }) => {
           <SectionHeader theme={theme}>
             <SectionTitle theme={theme}>Información Personal</SectionTitle>
           </SectionHeader>
-
           <SectionBody>
-            <FieldContainer>
-              <FieldLabel theme={theme}>
-                <LabelIcon>
-                  <Mail size={16} />
-                </LabelIcon>
-                Correo Electrónico
-              </FieldLabel>
-              {isEditing ? (
-                <FieldInput
-                  theme={theme}
-                  value={userData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                />
-              ) : (
-                <FieldValue theme={theme}>{userData.email}</FieldValue>
-              )}
-            </FieldContainer>
-
-            <FieldContainer>
-              <FieldLabel theme={theme}>
-                <LabelIcon>
-                  <Phone size={16} />
-                </LabelIcon>
-                Teléfono
-              </FieldLabel>
-              {isEditing ? (
-                <FieldInput
-                  theme={theme}
-                  value={userData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                />
-              ) : (
-                <FieldValue theme={theme}>{userData.phone}</FieldValue>
-              )}
-            </FieldContainer>
-
-            <FieldContainer>
-              <FieldLabel theme={theme}>
-                <LabelIcon>
-                  <MapPin size={16} />
-                </LabelIcon>
-                Dirección
-              </FieldLabel>
-              {isEditing ? (
-                <FieldInput
-                  theme={theme}
-                  value={userData.address}
-                  onChange={(e) => handleInputChange("address", e.target.value)}
-                />
-              ) : (
-                <FieldValue theme={theme}>{userData.address}</FieldValue>
-              )}
-            </FieldContainer>
-
-            <FieldContainer>
-              <FieldLabel theme={theme}>
-                <LabelIcon>
-                  <Calendar size={16} />
-                </LabelIcon>
-                Fecha de Nacimiento
-              </FieldLabel>
-              {isEditing ? (
-                <FieldInput
-                  theme={theme}
-                  value={userData.birthdate}
-                  onChange={(e) => handleInputChange("birthdate", e.target.value)}
-                />
-              ) : (
-                <FieldValue theme={theme}>{userData.birthdate}</FieldValue>
-              )}
-            </FieldContainer>
-
-            <FieldContainer>
-              <FieldLabel theme={theme}>
-                <LabelIcon>
-                  <UserIcon size={16} />
-                </LabelIcon>
-                Biografía
-              </FieldLabel>
-              {isEditing ? (
-                <TextArea
-                  theme={theme}
-                  value={userData.bio}
-                  onChange={(e) => handleInputChange("bio", e.target.value)}
-                />
-              ) : (
-                <FieldValue theme={theme}>{userData.bio}</FieldValue>
-              )}
-            </FieldContainer>
+            {[
+              { field: "email", label: "Correo Electrónico", Icon: Mail },
+              { field: "phone", label: "Teléfono", Icon: Phone },
+              { field: "address", label: "Dirección", Icon: MapPin },
+              { field: "birthdate", label: "Fecha de Nacimiento", Icon: Calendar },
+              { field: "bio", label: "Biografía", Icon: UserIcon }
+            ].map(({ field, label, Icon }) => (
+              <FieldContainer key={field}>
+                <FieldLabel theme={theme}>
+                  <LabelIcon><Icon size={16} /></LabelIcon>
+                  {label}
+                </FieldLabel>
+                {isEditing ? (
+                  field === "bio" ? (
+                    <TextArea
+                      theme={theme}
+                      value={userData[field]}
+                      onChange={e => handleInputChange(field, e.target.value)}
+                    />
+                  ) : (
+                    <FieldInput
+                      theme={theme}
+                      value={userData[field]}
+                      onChange={e => handleInputChange(field, e.target.value)}
+                    />
+                  )
+                ) : (
+                  <FieldValue theme={theme}>{userData[field]}</FieldValue>
+                )}
+              </FieldContainer>
+            ))}
           </SectionBody>
         </Card>
 
@@ -215,64 +209,32 @@ const PerfilView = ({ changeComponent }) => {
               <SectionTitle theme={theme}>Privacidad y Seguridad</SectionTitle>
             </TitleWithIcon>
           </SectionHeader>
-
           <div style={{ padding: "1rem" }}>
-            <PrivacyItem theme={theme}>
-              <PrivacyLabel theme={theme}>
-                <Eye size={16} style={{ marginRight: "0.5rem" }} />
-                Mostrar actividad reciente
-              </PrivacyLabel>
-              <Switch
-                theme={theme}
-                checked={privacySettings.showActivity}
-                onClick={() => togglePrivacySetting("showActivity")}
-              />
-            </PrivacyItem>
-
-            <PrivacyItem theme={theme}>
-              <PrivacyLabel theme={theme}>
-                <Eye size={16} style={{ marginRight: "0.5rem" }} />
-                Mostrar saldo en pantalla principal
-              </PrivacyLabel>
-              <Switch
-                theme={theme}
-                checked={privacySettings.showBalance}
-                onClick={() => togglePrivacySetting("showBalance")}
-              />
-            </PrivacyItem>
-
-            <PrivacyItem theme={theme}>
-              <PrivacyLabel theme={theme}>
-                <Shield size={16} style={{ marginRight: "0.5rem" }} />
-                Autenticación de dos factores
-              </PrivacyLabel>
-              <Switch
-                theme={theme}
-                checked={privacySettings.twoFactorAuth}
-                onClick={() => togglePrivacySetting("twoFactorAuth")}
-              />
-            </PrivacyItem>
-
-            <PrivacyItem theme={theme}>
-              <PrivacyLabel theme={theme}>
-                <Bell size={16} style={{ marginRight: "0.5rem" }} />
-                Notificaciones por correo
-              </PrivacyLabel>
-              <Switch
-                theme={theme}
-                checked={privacySettings.emailNotifications}
-                onClick={() => togglePrivacySetting("emailNotifications")}
-              />
-            </PrivacyItem>
+            {[
+              { key: "showActivity", label: "Mostrar actividad reciente", Icon: Eye },
+              { key: "showBalance", label: "Mostrar saldo en pantalla principal", Icon: Eye },
+              { key: "twoFactorAuth", label: "Autenticación de dos factores", Icon: Shield },
+              { key: "emailNotifications", label: "Notificaciones por correo", Icon: Bell }
+            ].map(({ key, label, Icon }) => (
+              <PrivacyItem theme={theme} key={key}>
+                <PrivacyLabel theme={theme}>
+                  <Icon size={16} style={{ marginRight: "0.5rem" }} />
+                  {label}
+                </PrivacyLabel>
+                <Switch
+                  theme={theme}
+                  checked={privacySettings[key]}
+                  onClick={() => togglePrivacySetting(key)}
+                />
+              </PrivacyItem>
+            ))}
           </div>
         </Card>
 
-        {/* Botón de guardar (visible solo en modo edición) */}
+        {/* Botón de guardar */}
         {isEditing && (
           <SaveButton onClick={handleSave}>
-            <IconWrapper>
-              <Save size={20} />
-            </IconWrapper>
+            <IconWrapper><Save size={20} /></IconWrapper>
             Guardar Cambios
           </SaveButton>
         )}

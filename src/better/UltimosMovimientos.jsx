@@ -1,48 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Calendar, ArrowDown, ArrowUp, Filter, ChevronDown } from "lucide-react";
+import api from "../components/axios";
 
-// Sample movement data
-const sampleMovements = [
-  { id: 1, type: 'income', name: 'Pago Quincenal', amount: 1500, date: '01-01-2025', description: 'Sueldo' },
-  { id: 2, type: 'expense', name: 'Compras', amount: 350, date: '2025-01-15', description: 'Compras en supermercado' },
-  { id: 3, type: 'income', name: 'Pago Quincenal', amount: 1500, date: '01-14-25', description: 'Sueldo' },
-  { id: 4, type: 'expense', name: 'Gasolina', amount: 350, date: '2025-01-15', description: 'Emergencia' },
-];
-
-const UltimosMovimientosView = () => {
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [periodFilter, setPeriodFilter] = useState('month');
+export default function UltimosMovimientosView() {
+  const [movements, setMovements] = useState([]);
+  const [typeFilter, setTypeFilter] = useState("all");     // "all" | "Ingreso" | "Gasto"
+  const [periodFilter, setPeriodFilter] = useState("month");
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
-  
-  // Format date to display
+
+  // 1) Traer transacciones
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const { data } = await api.get("/api/transactions", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMovements(data.data);
+      } catch (err) {
+        console.error("Error cargando movimientos:", err);
+      }
+    })();
+  }, []);
+
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: '2-digit' });
+    const d = new Date(dateString);
+    return d.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
   };
-  
-  // Filter movements based on selected filters
-  const filteredMovements = sampleMovements.filter(movement => {
-    // Type filter
-    if (typeFilter !== 'all' && movement.type !== typeFilter) {
+
+  // 2) Filtrado
+  const filteredMovements = movements.filter((mv) => {
+    // tipo
+    if (typeFilter !== "all" && mv.type !== typeFilter) {
       return false;
     }
-    
-    // Period filter
-    const currentDate = new Date();
-    const movementDate = new Date(movement.date);
-    
-    if (periodFilter === 'day') {
-      return movementDate.getDate() === currentDate.getDate() && 
-             movementDate.getMonth() === currentDate.getMonth() &&
-             movementDate.getFullYear() === currentDate.getFullYear();
-    } else if (periodFilter === 'month') {
-      return movementDate.getMonth() === currentDate.getMonth() &&
-             movementDate.getFullYear() === currentDate.getFullYear();
+    // periodo
+    const now = new Date();
+    const mDate = new Date(mv.created_at || mv.date);
+    if (periodFilter === "day") {
+      return (
+        mDate.getDate() === now.getDate() &&
+        mDate.getMonth() === now.getMonth() &&
+        mDate.getFullYear() === now.getFullYear()
+      );
+    } else if (periodFilter === "month") {
+      return (
+        mDate.getMonth() === now.getMonth() &&
+        mDate.getFullYear() === now.getFullYear()
+      );
     }
-    
-    return true;
+    return true; // all
   });
 
   return (
@@ -52,147 +65,128 @@ const UltimosMovimientosView = () => {
         <FilterContainer>
           {/* Period Filter */}
           <FilterGroup>
-            <FilterButton 
+            <FilterButton
               active={showPeriodDropdown}
               onClick={() => {
                 setShowPeriodDropdown(!showPeriodDropdown);
                 setShowTypeDropdown(false);
               }}
             >
-              <FilterIcon>
-                <Calendar size={14} />
-              </FilterIcon>
-              {periodFilter === 'day' ? 'Hoy' : 
-               periodFilter === 'month' ? 'Este Mes' : 'Todos'}
-              <FilterIcon>
-                <ChevronDown size={12} />
-              </FilterIcon>
+              <FilterIcon><Calendar size={14} /></FilterIcon>
+              {periodFilter === "day" ? "Hoy"
+               : periodFilter === "month" ? "Este Mes"
+               : "Todos"}
+              <FilterIcon><ChevronDown size={12} /></FilterIcon>
             </FilterButton>
-            
             {showPeriodDropdown && (
               <FilterDropdown>
-                <FilterOption 
-                  active={periodFilter === 'day'} 
+                <FilterOption
+                  active={periodFilter === "day"}
                   onClick={() => {
-                    setPeriodFilter('day');
+                    setPeriodFilter("day");
                     setShowPeriodDropdown(false);
                   }}
-                >
-                  Hoy
-                </FilterOption>
-                <FilterOption 
-                  active={periodFilter === 'month'} 
+                >Hoy</FilterOption>
+                <FilterOption
+                  active={periodFilter === "month"}
                   onClick={() => {
-                    setPeriodFilter('month');
+                    setPeriodFilter("month");
                     setShowPeriodDropdown(false);
                   }}
-                >
-                  Este Mes
-                </FilterOption>
-                <FilterOption 
-                  active={periodFilter === 'all'} 
+                >Este Mes</FilterOption>
+                <FilterOption
+                  active={periodFilter === "all"}
                   onClick={() => {
-                    setPeriodFilter('all');
+                    setPeriodFilter("all");
                     setShowPeriodDropdown(false);
                   }}
-                >
-                  Todos
-                </FilterOption>
+                >Todos</FilterOption>
               </FilterDropdown>
             )}
           </FilterGroup>
-          
+
           {/* Type Filter */}
           <FilterGroup>
-            <FilterButton 
+            <FilterButton
               active={showTypeDropdown}
               onClick={() => {
                 setShowTypeDropdown(!showTypeDropdown);
                 setShowPeriodDropdown(false);
               }}
             >
-              <FilterIcon>
-                <Filter size={14} />
-              </FilterIcon>
-              {typeFilter === 'expense' ? 'Gastos' : 
-               typeFilter === 'income' ? 'Ingresos' : 'Todos'}
-              <FilterIcon>
-                <ChevronDown size={12} />
-              </FilterIcon>
+              <FilterIcon><Filter size={14} /></FilterIcon>
+              {typeFilter === "Gasto" ? "Gastos"
+               : typeFilter === "Ingreso" ? "Ingresos"
+               : "Todos"}
+              <FilterIcon><ChevronDown size={12} /></FilterIcon>
             </FilterButton>
-            
             {showTypeDropdown && (
               <FilterDropdown>
-                <FilterOption 
-                  active={typeFilter === 'all'} 
+                <FilterOption
+                  active={typeFilter === "all"}
                   onClick={() => {
-                    setTypeFilter('all');
+                    setTypeFilter("all");
                     setShowTypeDropdown(false);
                   }}
-                >
-                  Todos
-                </FilterOption>
-                <FilterOption 
-                  active={typeFilter === 'expense'} 
+                >Todos</FilterOption>
+                <FilterOption
+                  active={typeFilter === "Gasto"}
                   onClick={() => {
-                    setTypeFilter('expense');
+                    setTypeFilter("Gasto");
                     setShowTypeDropdown(false);
                   }}
-                >
-                  Gastos
-                </FilterOption>
-                <FilterOption 
-                  active={typeFilter === 'income'} 
+                >Gastos</FilterOption>
+                <FilterOption
+                  active={typeFilter === "Ingreso"}
                   onClick={() => {
-                    setTypeFilter('income');
+                    setTypeFilter("Ingreso");
                     setShowTypeDropdown(false);
                   }}
-                >
-                  Ingresos
-                </FilterOption>
+                >Ingresos</FilterOption>
               </FilterDropdown>
             )}
           </FilterGroup>
         </FilterContainer>
       </CardHeader>
-      
+
       <MovementsList>
         {filteredMovements.length > 0 ? (
-          filteredMovements.map(movement => (
-            <MovementItem key={movement.id} type={movement.type}>
+          filteredMovements.map((mv) => (
+            <MovementItem key={mv.id} type={mv.type === "Gasto" ? "expense" : "income"}>
               <MovementHeader>
                 <MovementTitle>
                   <FilterIcon>
-                    {movement.type === 'expense' ? (
-                      <ArrowDown size={16} color={colors.danger} />
+                    {mv.type === "Gasto" ? (
+                      <ArrowDown size={16} color="#dc3545" />
                     ) : (
-                      <ArrowUp size={16} color={colors.success} />
+                      <ArrowUp size={16} color="#28a745" />
                     )}
                   </FilterIcon>
-                  <MovementText>{movement.name}</MovementText>
+                  <MovementText>{mv.note || mv.category?.name}</MovementText>
                 </MovementTitle>
-                <MovementAmount 
-                  danger={movement.type === 'expense'}
-                  success={movement.type === 'income'}
+                <MovementAmount
+                  danger={mv.type === "Gasto"}
+                  success={mv.type === "Ingreso"}
                 >
-                  {movement.type === 'expense' ? '-' : '+'}{movement.amount} MXN
+                  {mv.type === "Gasto" ? "-" : "+"}
+                  {parseFloat(mv.amount).toLocaleString()} MXN
                 </MovementAmount>
               </MovementHeader>
               <MovementDetails>
-                <Calendar size={12} style={{ marginRight: '4px' }} />
-                {formatDate(movement.date)} • {movement.description}
+                <Calendar size={12} style={{ marginRight: "4px" }} />
+                {formatDate(mv.created_at || mv.date)} • {mv.note || ""}
               </MovementDetails>
             </MovementItem>
           ))
         ) : (
-          <NoMovements>No hay movimientos para el filtro seleccionado</NoMovements>
+          <NoMovements>
+            No hay movimientos para el filtro seleccionado
+          </NoMovements>
         )}
       </MovementsList>
     </Card>
   );
-};
-
-export default UltimosMovimientosView;
+}
 
 const colors = {
   primary: "#FF9500", // iOS orange
