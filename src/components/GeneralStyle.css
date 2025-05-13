@@ -9,7 +9,7 @@
 }
 
 .overflow-auto::-webkit-scrollbar-thumb:hover {
-    background: #0056b3; /* Cambio de color al pasar el mouse */
+    background: #D9632A; /* Cambio de color al pasar el mouse */
 }
 
 .overflow-auto::-webkit-scrollbar-track {
@@ -28,7 +28,7 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #0056b3; /* Cambio de color al pasar el mouse */
+    background: #D9632A; /* Cambio de color al pasar el mouse */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {

@@ -7,7 +7,8 @@ import { CreditCard as CreditCardIcon, Wallet, DollarSign } from "lucide-react";
 const CardsCredit = ({
   disponible = "", limite = "",
   gasto1 = "", gasto2 = "", gasto3 = "",
-  fechaCorte = "", fechaPago = "", oculto 
+  fechaCorte = "", fechaPago = "", oculto,
+  nombre = ""
 }) => {
 
 const navigate = useNavigate();
@@ -21,9 +22,8 @@ const handleCard = () => {
       <CardCredito>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
-            CRÉDITO
+            CRÉDITO - {nombre}
           </h1>
-          <ButtonEntrar onClick={handleCard}>Entrar</ButtonEntrar>
         </div>
         <Row>
           {/* Tarjeta de crédito con estilo iOS */}
@@ -65,6 +65,9 @@ const handleCard = () => {
             </DateInfo>
           </BalanceSection>
         </Row>
+        <div className="d-flex justify-content-center mt-3">
+          <ButtonEntrar onClick={handleCard}>Entrar</ButtonEntrar>
+        </div>
       </CardCredito>
     </Container>
   );
@@ -74,17 +77,23 @@ const handleCard = () => {
 const CardsMonedero = ({
   saldo = "",
   ingreso1 = "", ingreso2 = "", ingreso3 = "",
-  gasto1 = "", gasto2 = "", gasto3 = "", oculto
+  gasto1 = "", gasto2 = "", gasto3 = "", oculto,
+  nombre = ""
 }) => {
+
+const navigate = useNavigate();
+
+const handleCard = () => {
+  navigate('/homecard');
+};
 
   return (
     <Container>
       <CardMonedero>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
-            MONEDERO
+            MONEDERO - {nombre}
           </h1>
-          <ButtonEntrar>Entrar</ButtonEntrar>
         </div>
         <Row>
           {/* Monedero con estilo iOS */}
@@ -120,6 +129,9 @@ const CardsMonedero = ({
             <BalanceValue>{oculto ? "****" : `$${saldo}`}</BalanceValue>
           </BalanceSection>
         </Row>
+        <div className="d-flex justify-content-center mt-3">
+          <ButtonEntrar onClick={handleCard}>Entrar</ButtonEntrar>
+        </div>
       </CardMonedero>
 
     </Container>
@@ -131,16 +143,23 @@ const CardsDebit = ({
     saldo = "", 
     limite = "",
     gasto1 = "", gasto2 = "", gasto3 = "",
-    ingreso1 = "", ingreso2 = "", ingreso3 = "", oculto
-  }) => {
-    return (
+    ingreso1 = "", ingreso2 = "", ingreso3 = "", oculto,
+    nombre = ""
+}) => {
+
+const navigate = useNavigate();
+
+const handleCard = () => {
+  navigate('/homecard');
+};
+
+  return (
       <Container>
         <CardDebito>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <h1 className="text-center font-weight-bold" style={{ color: "#D9632A", fontSize: "18px", marginRight: '10px' }}>
-            DÉBITO
+            DÉBITO - {nombre}
           </h1>
-          <ButtonEntrar>Entrar</ButtonEntrar>
         </div>
           <Row>
             {/* Tarjeta de débito con estilo iOS */}
@@ -180,6 +199,9 @@ const CardsDebit = ({
               </DateInfo>
             </BalanceSection>
           </Row>
+          <div className="d-flex justify-content-center mt-3">
+            <ButtonEntrar onClick={handleCard}>Entrar</ButtonEntrar>
+          </div>
         </CardDebito>
 
       </Container>

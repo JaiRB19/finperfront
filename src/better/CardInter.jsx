@@ -11,9 +11,9 @@ const CardsInter = ({ changeComponent }) => {
   const toggleOcultar = () => setOculto(!oculto);
 
   const cards = [
-    { type: "debit", component: CardsDebit, saldo: "2500.00", limite: "8000.00", ingreso1: "1200.00", ingreso2: "800.00", ingreso3: "500.00", gasto1: "350.00", gasto2: "125.00", gasto3: "75.00" },
-    { type: "credit", component: CardsCredit, disponible: "25000", limite: "50000", gasto1: "2500", gasto2: "1800", gasto3: "3200", fechaCorte: "20/04/2025", fechaPago: "05/05/2025" },
-    { type: "monedero", component: CardsMonedero, saldo: "5650", ingreso1: "2000", ingreso2: "1500", ingreso3: "3000", gasto1: "500", gasto2: "350", gasto3: "700" }
+    { type: "debit", component: CardsDebit, saldo: "2500.00", limite: "8000.00", ingreso1: "1200.00", ingreso2: "800.00", ingreso3: "500.00", gasto1: "350.00", gasto2: "125.00", gasto3: "75.00", nombre: "BBVA"},
+    { type: "credit", component: CardsCredit, disponible: "25000", limite: "50000", gasto1: "2500", gasto2: "1800", gasto3: "3200", fechaCorte: "20/04/2025", fechaPago: "05/05/2025", nombre: "CREDITO" },
+    { type: "monedero", component: CardsMonedero, saldo: "5650", ingreso1: "2000", ingreso2: "1500", ingreso3: "3000", gasto1: "500", gasto2: "350", gasto3: "700", nombre: "MIS AHORROS" }
     
   ];
 
