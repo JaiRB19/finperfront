@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
     Home, 
     Globe, 
@@ -32,6 +32,7 @@ import CardHeader from "../better/CardHeader";
 import MetasAhorroView from "../better/MetasAhorroView";
 
 function HomeCard() {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState("general"); // Componente por defecto
 
@@ -62,6 +63,11 @@ function HomeCard() {
     setSelectedComponent(component);
   };
 
+  const handleLogoClick = () => {
+    navigate("/home");
+
+  };
+
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
@@ -69,7 +75,7 @@ function HomeCard() {
         <SidebarHeader>
           {!collapsed && (
             <LogoContainer>
-              <h2 style={{ color: "#D9632A", fontSize: "22px", fontWeight: "700", margin: 0 }}>FINPER</h2>
+              <LogoText onClick={handleLogoClick}>FINPER</LogoText>
               <div className="logo-accent" />
             </LogoContainer>
           )}
@@ -100,15 +106,7 @@ function HomeCard() {
           </NavLink>
         ))}
 
-        <ProfileSection>
-          <ProfileAvatar>
-            {!collapsed ? "UP" : "U"}
-          </ProfileAvatar>
-          {!collapsed && <ProfileInfo>
-            <ProfileName>Usuario Pro</ProfileName>
-            <ProfileStatus>Premium</ProfileStatus>
-          </ProfileInfo>}
-        </ProfileSection>
+
       </SidebarContainer>
 
       {/* Main Content */}
@@ -276,69 +274,6 @@ const NavLink = styled(Link)`
   `}
 `;
 
-const ContentContainer = styled.div`
-  position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
-  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
-  top: 0;                /* Desde el borde superior */
-  right: 0;              /* Hasta el borde derecho */
-  bottom: 0;             /* Hasta el borde inferior */
-  padding: 30px;
-  background: #f8f9fa;   /* Fondo claro para diferenciar el contenido */
-  transition: left 0.3s; /* Suaviza la transición al colapsar el sidebar */
-  display: flex;         /* Activa flexbox */
-  flex-direction: column; /* Organiza los elementos en columna */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center;     /* Centra horizontalmente */
-  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */4
-`;
-
-const ProfileSection = styled.div`
-  width: 90%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  margin: auto 0 20px 0;
-  border-top: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-radius: 12px;
-  
-  &:hover {
-    background: rgba(217, 99, 42, 0.05);
-  }
-`;
-
-const ProfileAvatar = styled.div`
-  width: ${props => props.collapsed ? '36px' : '40px'};
-  height: ${props => props.collapsed ? '36px' : '40px'};
-  border-radius: 12px;
-  background: linear-gradient(135deg, #D9632A, #F78839);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  box-shadow: 0 4px 8px rgba(217, 99, 42, 0.2);
-  transition: all 0.3s;
-`;
-
-const ProfileInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ProfileName = styled.span`
-  font-weight: 500;
-  font-size: 14px;
-  color: #333;
-`;
-
-const ProfileStatus = styled.span`
-  font-size: 12px;
-  color: #D9632A;
-`;
-
 const LogoContainer = styled.div`
   position: relative;
   display: flex;
@@ -366,4 +301,33 @@ const LogoIcon = styled.div`
   justify-content: center;
   font-weight: bold;
   font-size: 20px;
+`;
+
+const LogoText = styled.h2`
+  color: #D9632A;
+  font-size: 22px;
+  cursor: pointer;
+  font-weight: 700; 
+  margin: 0;
+  transition: transform 0.2s ease-in-out; /* Agrega una transición suave para la transformación */
+
+  &:hover {
+    transform: translateY(-2px); /* Mueve el texto 2 píxeles hacia arriba al hacer hover */
+  }
+`;
+
+const ContentContainer = styled.div`
+  position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
+  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
+  top: 0;                /* Desde el borde superior */
+  right: 0;              /* Hasta el borde derecho */
+  bottom: 0;             /* Hasta el borde inferior */
+  padding: 30px;
+  background: #f8f9fa;   /* Fondo claro para diferenciar el contenido */
+  transition: left 0.3s; /* Suaviza la transición al colapsar el sidebar */
+  display: flex;         /* Activa flexbox */
+  flex-direction: column; /* Organiza los elementos en columna */
+  justify-content: center; /* Centra verticalmente */
+  align-items: center;     /* Centra horizontalmente */
+  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */4
 `;

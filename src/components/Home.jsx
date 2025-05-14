@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
     Home, 
     CreditCard,
@@ -31,6 +31,7 @@ import SyncfyWidgetComponent from "./SyncfyWidgetComponent";
 
 
 function HomePage() {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [cards, setCards] = useState([]);
   const [selectedComponent, setSelectedComponent] = useState("dashboard"); // Componente por defecto
@@ -60,6 +61,16 @@ function HomePage() {
     setSelectedComponent(component);
   };
 
+  // Función para cambiar a vista de Planes
+  const handleClickPlanes = () => {
+    navigate("/planes");
+  };
+
+  const handleLogoClick = () => {
+    navigate("/home");
+  };
+
+
   return (
     <div style={{ display: "flex" }}>
       {/* Sidebar */}
@@ -67,7 +78,7 @@ function HomePage() {
         <SidebarHeader>
           {!collapsed && (
             <LogoContainer>
-              <h2 style={{ color: "#D9632A", fontSize: "22px", fontWeight: "700", margin: 0 }}>FINPER</h2>
+              <LogoText onClick={handleLogoClick}>FINPER</LogoText>
               <div className="logo-accent" />
             </LogoContainer>
           )}
@@ -96,7 +107,7 @@ function HomePage() {
           </NavLink>
         ))}
 
-        <ProfileSection>
+        <ProfileSection onClick={handleClickPlanes}>
           <ProfileAvatar>
             {!collapsed ? "UP" : "U"}
           </ProfileAvatar>
@@ -104,7 +115,7 @@ function HomePage() {
             <ProfileName>Usuario Pro</ProfileName>
             <ProfileStatus>Premium</ProfileStatus>
           </ProfileInfo>}
-        </ProfileSection>
+        </ProfileSection>       
 
       </SidebarContainer>
 
@@ -245,20 +256,46 @@ const NavLink = styled(Link)`
   `}
 `;
 
-const ContentContainer = styled.div`
-  position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
-  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
-  top: 0;                /* Desde el borde superior */
-  right: 0;              /* Hasta el borde derecho */
-  bottom: 0;             /* Hasta el borde inferior */
-  padding: 30px;
-  background: #f8f9fa;   /* Fondo claro para diferenciar el contenido */
-  transition: left 0.3s; /* Suaviza la transición al colapsar el sidebar */
-  display: flex;         /* Activa flexbox */
-  flex-direction: column; /* Organiza los elementos en columna */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center;     /* Centra horizontalmente */
-  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */4
+const LogoContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  .logo-accent {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    height: 3px;
+    width: 20px;
+    background: #D9632A;
+    border-radius: 3px;
+  }
+`;
+
+const LogoText = styled.h2`
+  color: #D9632A;
+  font-size: 22px;
+  cursor: pointer;
+  font-weight: 700; 
+  margin: 0;
+  transition: transform 0.2s ease-in-out; /* Agrega una transición suave para la transformación */
+
+  &:hover {
+    transform: translateY(-2px); /* Mueve el texto 2 píxeles hacia arriba al hacer hover */
+  }
+`;
+
+const LogoIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #D9632A;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
 `;
 
 const ProfileSection = styled.div`
@@ -308,31 +345,18 @@ const ProfileStatus = styled.span`
   color: #D9632A;
 `;
 
-const LogoContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  
-  .logo-accent {
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    height: 3px;
-    width: 20px;
-    background: #D9632A;
-    border-radius: 3px;
-  }
-`;
-
-const LogoIcon = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #D9632A;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 20px;
+const ContentContainer = styled.div`
+  position: absolute;    /* Posicionamiento absoluto para ocupar espacio disponible */
+  left: ${(props) => (props.collapsed ? "70px" : "200px")}; /* Se alinea con el borde del sidebar */
+  top: 0;                /* Desde el borde superior */
+  right: 0;              /* Hasta el borde derecho */
+  bottom: 0;             /* Hasta el borde inferior */
+  padding: 30px;
+  background: #f8f9fa;   /* Fondo claro para diferenciar el contenido */
+  transition: left 0.3s; /* Suaviza la transición al colapsar el sidebar */
+  display: flex;         /* Activa flexbox */
+  flex-direction: column; /* Organiza los elementos en columna */
+  justify-content: center; /* Centra verticalmente */
+  align-items: center;     /* Centra horizontalmente */
+  overflow-y: auto;      /* Permite scroll si el contenido es muy largo */4
 `;

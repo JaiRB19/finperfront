@@ -37,8 +37,8 @@ const PlansView = () => {
         "Exportación a Excel",
         "Categorización automática"
       ],
-      icon: <Gem size={24} color="#8b5cf6" />,
-      color: "#8b5cf6",
+      icon: <Gem size={24} color="#f59e0b" />,
+      color: "#f59e0b",
       popular: true
     },
     {
@@ -208,7 +208,7 @@ const Subtitle = styled.p`
 
 const PlansGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   margin-bottom: 4rem;
 `;
@@ -307,7 +307,6 @@ const UpgradeButton = styled.button`
   gap: 0.5rem;
   cursor: pointer;
   transition: opacity 0.2s;
-  
   &:hover {
     opacity: 0.9;
   }
