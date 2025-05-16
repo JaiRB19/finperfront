@@ -1,51 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { CheckCircle, Clock, PlusCircle, Edit, Trash, X, Save, AlertTriangle } from 'lucide-react';
+import api from '../components/axios';
 
 const MetasAhorroView = () => {
-  const [goals, setGoals] = useState([
-    { id: 1, title: 'Fondo de Emergencia', current: 6000, target: 10000, deadline: '2025-06-30' },
-    { id: 2, title: 'Vacaciones', current: 4000, target: 10000, deadline: '2025-08-15' },
-    { id: 3, title: 'Compra de Auto', current: 15000, target: 30000, deadline: '2025-12-20' },
-    { id: 4, title: 'Renovación Hogar', current: 8000, target: 20000, deadline: '2025-11-10' }
-  ]);
-  
+  const [goals, setGoals] = useState([]);
   const [newGoal, setNewGoal] = useState({ title: '', current: 0, target: 0, deadline: '' });
   const [editingGoal, setEditingGoal] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
-  const handleAddGoal = () => {
+  // Cargar metas desde el backend
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await api.get('/api/goals', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setGoals(response.data);
+      } catch (error) {
+        console.error('Error al obtener las metas', error);
+      }
+    };
+
+    fetchGoals();
+  }, []);
+
+  // Agregar una nueva meta
+  const handleAddGoal = async () => {
     if (newGoal.title && newGoal.target > 0) {
-      setGoals([...goals, { ...newGoal, id: Date.now() }]);
-      setNewGoal({ title: '', current: 0, target: 0, deadline: '' });
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await api.post('/api/goals', newGoal, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setGoals([...goals, response.data]);
+        setNewGoal({ title: '', current: 0, target: 0, deadline: '' });
+      } catch (error) {
+        console.error('Error al agregar la meta', error);
+      }
     }
   };
 
+  // Iniciar edición
   const startEditing = (goal) => {
     setEditingGoal({ ...goal });
   };
 
+  // Cancelar edición
   const cancelEditing = () => {
     setEditingGoal(null);
   };
 
-  const saveEditedGoal = () => {
+  // Guardar meta editada
+  const saveEditedGoal = async () => {
     if (editingGoal && editingGoal.title && editingGoal.target > 0) {
-      setGoals(goals.map(goal => 
-        goal.id === editingGoal.id ? editingGoal : goal
-      ));
-      setEditingGoal(null);
+      try {
+        const token = localStorage.getItem('auth_token');
+        const response = await api.put(`/api/goals/${editingGoal.id}`, editingGoal, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setGoals(goals.map((goal) => (goal.id === editingGoal.id ? response.data : goal)));
+        setEditingGoal(null);
+      } catch (error) {
+        console.error('Error al editar la meta', error);
+      }
     }
   };
 
+  // Confirmación de eliminación
   const handleDeleteConfirmation = (id) => {
     setDeleteConfirmation(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteConfirmation) {
-      setGoals(goals.filter((goal) => goal.id !== deleteConfirmation));
-      setDeleteConfirmation(null);
+      try {
+        const token = localStorage.getItem('auth_token');
+        await api.delete(`/api/goals/${deleteConfirmation}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setGoals(goals.filter((goal) => goal.id !== deleteConfirmation));
+        setDeleteConfirmation(null);
+      } catch (error) {
+        console.error('Error al eliminar la meta', error);
+      }
     }
   };
 
@@ -55,13 +102,12 @@ const MetasAhorroView = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('es-ES', {
         day: '2-digit',
         month: '2-digit',
-        year: '2-digit'
+        year: '2-digit',
       });
     } catch (e) {
       return dateString;
@@ -84,14 +130,20 @@ const MetasAhorroView = () => {
           placeholder="Monto Actual"
           width="120px"
           value={newGoal.current || ''}
-          onChange={(e) => setNewGoal({ ...newGoal, current: parseInt(e.target.value) || 0 })}
+          onChange={(e) => {
+            const value = Math.max(0, parseInt(e.target.value) || 0);
+            setNewGoal({ ...newGoal, current: value });
+          }}
         />
         <InputField
           type="number"
           placeholder="Meta Objetivo"
           width="120px"
           value={newGoal.target || ''}
-          onChange={(e) => setNewGoal({ ...newGoal, target: parseInt(e.target.value) || 0 })}
+          onChange={(e) => {
+            const value = Math.max(0, parseInt(e.target.value) || 0);
+            setNewGoal({ ...newGoal, target: value });
+          }}
         />
         <InputField
           type="date"
@@ -130,7 +182,7 @@ const MetasAhorroView = () => {
                       </ActionButton>
                     </ButtonGroup>
                   </EditHeader>
-                  
+
                   <EditGrid>
                     <EditField>
                       <FieldLabel>Título</FieldLabel>
@@ -172,11 +224,9 @@ const MetasAhorroView = () => {
                     <AlertTriangle color="#FF3B30" size={20} />
                     <DeleteTitle>¿Eliminar esta meta?</DeleteTitle>
                   </DeleteHeader>
-                  
                   <DeleteMessage>
                     ¿Estás seguro que deseas eliminar la meta "{goal.title}"? Esta acción no se puede deshacer.
                   </DeleteMessage>
-                  
                   <DeleteActions>
                     <ActionButton color="#FF3B30" onClick={confirmDelete}>
                       Confirmar Eliminación
@@ -202,39 +252,31 @@ const MetasAhorroView = () => {
                       <Trash size={18} color="#FF3B30" />
                     </IconButton>
                   </GoalHeader>
-                  
+
                   <ProgressBar>
-                    <ProgressFill 
-                      percentage={percentage} 
-                      completed={isCompleted}
-                    />
+                    <ProgressFill percentage={percentage} completed={isCompleted} />
                   </ProgressBar>
-                  
+
                   <GoalStats>
                     <StatsText>
                       {goal.current.toLocaleString()} MXN / {goal.target.toLocaleString()} MXN ({percentage.toFixed(1)}%)
                     </StatsText>
-                    <StatsText>
-                      Fecha límite: {formatDate(goal.deadline)}
-                    </StatsText>
+                    <StatsText>Fecha límite: {formatDate(goal.deadline)}</StatsText>
                   </GoalStats>
                 </>
               )}
             </GoalCard>
           );
         })}
-        
-        {goals.length === 0 && (
-          <EmptyState>
-            No hay metas de ahorro. ¡Agrega una para comenzar!
-          </EmptyState>
-        )}
+
+        {goals.length === 0 && <EmptyState>No hay metas de ahorro. ¡Agrega una para comenzar!</EmptyState>}
       </GoalsList>
     </Container>
   );
 };
 
 export default MetasAhorroView;
+
 
 // Styled Components
 const Container = styled.div`

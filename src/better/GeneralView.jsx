@@ -11,19 +11,30 @@ const GeneralCardView = () => {
     expense: 0,
   });
 
+  const [goals, setGoals] = useState([]);
+
   useEffect(() => {
-    const fetchSummary = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("auth_token");
-        const { data } = await api.get("/api/dashboard/summary", {
+
+        // Cargar resumen
+        const summaryRes = await api.get("/api/dashboard/summary", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setSummary(data.data);
+        setSummary(summaryRes.data.data);
+
+        // Cargar metas
+        const goalsRes = await api.get("/api/goals", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setGoals(goalsRes.data);
       } catch (err) {
-        console.error("Error cargando resumen:", err);
+        console.error("Error cargando datos del dashboard:", err);
       }
     };
-    fetchSummary();
+
+    fetchData();
   }, []);
 
   return (
@@ -34,7 +45,6 @@ const GeneralCardView = () => {
           <CardTitle>Saldo Disponible</CardTitle>
           <DateRange>1/01/25 - 31/01/25</DateRange>
           <AmountDisplay>
-            {/*{summary.balance.toLocaleString()} MXN*/}
             {Math.max(summary.balance, 0).toLocaleString()} MXN
           </AmountDisplay>
         </Card>
@@ -60,23 +70,34 @@ const GeneralCardView = () => {
       <Row>
         <Card minWidth="300px" style={{ flex: 2 }}>
           <CardTitle>Metas de Ahorro</CardTitle>
-          <GoalItem>
-            <GoalTitle>Fondo de Emergencia</GoalTitle>
-            <GoalProgress>
-              <ProgressBar percentage={60} />
-              <ProgressText>60% - $6,000 / $10,000</ProgressText>
-            </GoalProgress>
-            <GoalDeadline>Fecha límite: 30/06/25</GoalDeadline>
-          </GoalItem>
-
-          <GoalItem>
-            <GoalTitle>Vacaciones</GoalTitle>
-            <GoalProgress>
-              <ProgressBar percentage={40} />
-              <ProgressText>40% - $4,000 / $10,000</ProgressText>
-            </GoalProgress>
-            <GoalDeadline>Fecha límite: 15/08/25</GoalDeadline>
-          </GoalItem>
+          {goals.length > 0 ? (
+            goals.map((goal) => {
+              const percentage = Math.min((goal.current / goal.target) * 100, 100);
+              return (
+                <GoalItem key={goal.id}>
+                  <GoalTitle>{goal.title}</GoalTitle>
+                  <GoalProgress>
+                    <ProgressBar percentage={percentage} />
+                    <ProgressText>
+                      {percentage.toFixed(0)}% - ${goal.current.toLocaleString()} / ${goal.target.toLocaleString()}
+                    </ProgressText>
+                  </GoalProgress>
+                  <GoalDeadline>
+                    Fecha límite:{" "}
+                    {goal.deadline
+                      ? new Date(goal.deadline).toLocaleDateString("es-MX", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                        })
+                      : "Sin fecha"}
+                  </GoalDeadline>
+                </GoalItem>
+              );
+            })
+          ) : (
+            <GoalDeadline>No tienes metas activas.</GoalDeadline>
+          )}
         </Card>
 
         <Card minWidth="200px" style={{ flex: 1 }}>
